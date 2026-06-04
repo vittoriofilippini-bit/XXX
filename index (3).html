@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Italian Family Archive</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8f6f1;--surface:#fff;--surface2:#f2efe8;--surface3:#e8e4db;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --ink:#18160f;--ink2:#4a4438;--ink3:#9a9080;--ink4:#ccc4b4;
+  --gold:#b8883a;--gold-bg:#fdf5e8;--gold-border:rgba(184,136,58,0.3);
+  --serif:'Playfair Display',Georgia,serif;--sans:'Inter',system-ui,sans-serif;
+  --r:10px;--rl:14px;
+}
+html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--ink);}
+
+/* TOP BAR */
+.topbar{
+  position:fixed;top:0;left:0;right:0;height:52px;z-index:200;
+  background:var(--ink);
+  display:flex;align-items:center;gap:14px;padding:0 1.5rem;
+}
+.logo{font-family:var(--serif);font-size:19px;color:#fff;white-space:nowrap;flex-shrink:0;}
+.logo em{color:#c8a45a;font-style:italic;}
+.sep{width:1px;height:20px;background:rgba(255,255,255,.14);flex-shrink:0;}
+.search-box{position:relative;flex:1;max-width:260px;}
+.search-box input{
+  width:100%;height:30px;background:rgba(255,255,255,.09);
+  border:1px solid rgba(255,255,255,.16);border-radius:6px;
+  color:#fff;font-family:var(--sans);font-size:12px;
+  padding:0 10px 0 28px;outline:none;transition:background .15s;
+}
+.search-box input:focus{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.32);}
+.search-box input::placeholder{color:rgba(255,255,255,.3);}
+.search-ico{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.35);font-size:13px;pointer-events:none;}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.stat-chip{font-size:11px;color:rgba(255,255,255,.35);white-space:nowrap;}
+
+/* LAYOUT */
+.layout{display:flex;height:100vh;padding-top:52px;}
+
+/* SIDEBAR */
+.sidebar{
+  width:248px;flex-shrink:0;height:100%;overflow-y:auto;
+  background:var(--surface);border-right:1px solid var(--border);
+}
+.sidebar::-webkit-scrollbar{width:3px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--surface3);}
+.sb-hd{padding:.875rem 1.125rem .625rem;border-bottom:1px solid var(--border);}
+.sb-hd h2{font-family:var(--serif);font-size:14px;font-weight:400;color:var(--ink2);}
+.sb-hd p{font-size:10px;color:var(--ink3);margin-top:2px;}
+
+.fam-row{
+  display:flex;align-items:center;gap:9px;
+  padding:7px 1.125rem;cursor:pointer;
+  transition:background .1s;border-left:3px solid transparent;
+}
+.fam-row:hover{background:var(--surface2);}
+.fam-row.active{background:var(--gold-bg);border-left-color:var(--gold);}
+.fam-crest{
+  width:28px;height:28px;border-radius:6px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:12px;font-weight:600;
+}
+.fam-nm{font-size:12px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;}
+.fam-geo{font-size:9.5px;color:var(--ink3);}
+.fam-cnt{font-size:10px;color:var(--ink3);flex-shrink:0;}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.main::-webkit-scrollbar{width:5px;}
+.main::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px;}
+
+/* HERO */
+.hero{
+  padding:2rem 2.5rem 1.625rem;color:#fff;
+  position:relative;overflow:hidden;flex-shrink:0;
+}
+.hero::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,0,0,.18) 0,transparent 60%);
+  pointer-events:none;
+}
+.hero-inner{position:relative;z-index:1;}
+.hero-name{font-family:var(--serif);font-size:36px;font-weight:400;line-height:1.1;letter-spacing:-.01em;}
+.hero-name em{font-style:italic;opacity:.75;}
+.hero-sub{font-size:12px;opacity:.5;margin-top:4px;font-weight:300;}
+.hero-kpis{
+  display:flex;gap:2rem;flex-wrap:wrap;
+  margin-top:1.25rem;padding-top:1rem;
+  border-top:1px solid rgba(255,255,255,.12);
+}
+.kpi-val{font-size:24px;font-weight:300;line-height:1;}
+.kpi-lbl{font-size:9px;opacity:.4;margin-top:3px;text-transform:uppercase;letter-spacing:.08em;}
+.hero-assets{font-size:11px;opacity:.45;margin-top:.75rem;font-weight:300;}
+
+/* CONTENT AREA */
+.content{padding:1.75rem 2.5rem 3rem;flex:1;}
+
+/* METRICS ROW */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.75rem;}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.875rem 1rem;}
+.metric .mv{font-family:var(--serif);font-size:28px;font-weight:400;color:var(--ink);line-height:1;}
+.metric .ml{font-size:9.5px;color:var(--ink3);margin-top:4px;text-transform:uppercase;letter-spacing:.06em;}
+.metric .ms{font-size:11px;color:var(--ink2);margin-top:5px;}
+
+/* GENERATION SECTIONS */
+.gen-section{margin-bottom:2rem;}
+.gen-heading{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:1rem;
+}
+.gen-num{
+  font-family:var(--serif);font-size:13px;font-weight:400;
+  color:var(--ink3);
+  border:1px solid var(--border2);
+  border-radius:50%;width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.gen-title{font-family:var(--serif);font-size:16px;font-weight:400;color:var(--ink2);}
+.gen-count{font-size:11px;color:var(--ink3);margin-left:auto;}
+.gen-rule{flex:1;height:1px;background:var(--border);}
+
+/* PERSON CARDS GRID */
+.cards-grid{
+  display:flex;flex-wrap:wrap;gap:10px;
+}
+
+/* PERSON CARD */
+.pcard{
+  width:130px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:12px 10px 10px;
+  cursor:pointer;
+  position:relative;
+  transition:transform .16s,border-color .16s,box-shadow .16s;
+}
+.pcard:hover{transform:translateY(-2px);border-color:var(--gold-border);box-shadow:0 6px 20px rgba(0,0,0,.08);}
+.pcard.sel{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,136,58,.15),0 8px 24px rgba(0,0,0,.1);transform:translateY(-2px);}
+.pcard.dim{opacity:.2;pointer-events:none;}
+.pcard.hl{border-color:var(--gold-border);background:var(--gold-bg);}
+.pcard.sp-card{background:var(--surface2);}
+.pcard .dag{position:absolute;top:5px;right:7px;font-size:9px;color:var(--ink4);}
+
+.pcard-av{
+  width:36px;height:36px;border-radius:50%;margin:0 auto 8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:14px;font-weight:600;
+}
+.pcard-first{font-family:var(--serif);font-size:13px;color:var(--ink);line-height:1.2;text-align:center;}
+.pcard-sur{font-size:9.5px;color:var(--ink3);margin-top:2px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pcard-year{font-size:9px;color:var(--ink4);margin-top:3px;text-align:center;}
+.pcard-branch{
+  display:inline-block;margin-top:5px;
+  font-size:8px;padding:1px 6px;border-radius:8px;
+  font-weight:500;white-space:nowrap;
+}
+.pcard-rel{
+  position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
+  font-size:8px;color:var(--ink3);background:var(--surface);
+  border:1px solid var(--border);border-radius:8px;
+  padding:1px 6px;white-space:nowrap;
+}
+
+/* marriage connector between two cards */
+.couple-wrap{display:inline-flex;align-items:center;gap:0;vertical-align:top;}
+.m-line{width:12px;height:1.5px;background:var(--gold);flex-shrink:0;}
+.m-ring{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--gold);background:var(--bg);flex-shrink:0;}
+
+/* BRANCH BAR */
+.branch-section{margin-top:1.75rem;}
+.branch-section h3{font-family:var(--serif);font-size:16px;font-weight:400;color:var(--ink2);margin-bottom:12px;}
+.br{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.br-nm{font-size:12px;color:var(--ink2);width:120px;flex-shrink:0;}
+.br-tr{flex:1;height:6px;background:var(--surface3);border-radius:3px;overflow:hidden;}
+.br-fl{height:100%;border-radius:3px;}
+.br-ct{font-size:11px;color:var(--ink3);width:22px;text-align:right;flex-shrink:0;}
+
+/* DETAIL PANEL */
+.dp{
+  position:fixed;right:1.25rem;top:64px;width:256px;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--rl);z-index:300;display:none;
+  box-shadow:0 20px 50px rgba(0,0,0,.12);overflow:hidden;
+}
+.dp.open{display:block;}
+.dp-hd{padding:.875rem 1rem .75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;}
+.dp-av{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:15px;font-weight:600;}
+.dp-nm{font-family:var(--serif);font-size:16px;line-height:1.2;color:var(--ink);}
+.dp-sb{font-size:10px;color:var(--ink3);margin-top:2px;}
+.dp-x{margin-left:auto;width:22px;height:22px;border-radius:5px;flex-shrink:0;border:1px solid var(--border);background:none;color:var(--ink3);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.dp-x:hover{background:var(--surface2);}
+.dp-bd{padding:.75rem 1rem;}
+.dp-r{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;}
+.dp-r:last-child{border:none;}
+.dp-lb{color:var(--ink3);font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;}
+.dp-vl{color:var(--ink);font-weight:500;text-align:right;max-width:158px;}
+.dp-lk{padding:.5rem 1rem .875rem;border-top:1px solid var(--border);}
+.dp-lk-t{font-size:9.5px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+.dp-lk-i{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:11px;color:var(--ink2);cursor:pointer;transition:color .12s;}
+.dp-lk-i:hover{color:var(--gold);}
+.dp-lk-d{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.dp-lk-b{margin-left:auto;font-size:9px;padding:1px 5px;border-radius:5px;background:var(--surface2);color:var(--ink3);}
+
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--ink3);text-align:center;padding:3rem;}
+.empty-icon{font-family:var(--serif);font-size:52px;color:var(--surface3);}
+.empty p{font-size:13px;margin-top:10px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">Italian <em>Family Archive</em></div>
+  <div class="sep"></div>
+  <div class="search-box">
+    <span class="search-ico">⌕</span>
+    <input type="text" id="s-in" placeholder="Search person or family…" oninput="onSearch(this.value)">
+  </div>
+  <div class="tb-right">
+    <div class="stat-chip" id="stat-chip"></div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-hd">
+      <h2>All Families</h2>
+      <p id="sb-sub"></p>
+    </div>
+    <div id="fam-list"></div>
+  </aside>
+
+  <div class="main" id="main">
+    <div class="empty">
+      <div class="empty-icon">𝔉</div>
+      <p>Select a family from the sidebar</p>
+    </div>
+  </div>
+</div>
+
+<div class="dp" id="dp">
+  <div class="dp-hd" id="dp-hd"></div>
+  <div class="dp-bd" id="dp-bd"></div>
+  <div class="dp-lk" id="dp-lk"></div>
+</div>
+
+<script>
+const FAMILIES = [{"id": "F001", "name": "Agnelli-Elkann", "surname": "Agnelli / Elkann", "assets": "Fiat / Exor / Stellantis / Ferrari", "geo": "Torino", "color": "#c8a45a", "members": [{"id": "A000001", "first": "Giovanni", "sur": "Agnelli", "fid": null, "mid": null, "dob": "1866-08-13", "dod": "1945-12-16", "sp": ["A000002"], "family_id": "F001", "branch": "Agnelli", "gender": "M", "alive": false, "conf": 95}, {"id": "A000002", "first": "Clara", "sur": "Boselli", "fid": null, "mid": null, "dob": "1869", "dod": null, "sp": ["A000001"], "family_id": "F001", "branch": "Agnelli", "gender": "F", "alive": false, "conf": 85}, {"id": "A000003", "first": "Edoardo", "sur": "Agnelli", "fid": "A000001", "mid": "A000002", "dob": "1892-01-02", "dod": "1935-07-14", "sp": ["A000004"], "family_id": "F001", "branch": "Agnelli", "gender": "M", "alive": false, "conf": 95}, {"id": "A000004", "first": "Virginia", "sur": "Bourbon del Monte", "fid": null, "mid": null, "dob": "1899", "dod": "1945", "sp": ["A000003"], "family_id": "F001", "branch": "Spouse", "gender": "F", "alive": false, "conf": 85}, {"id": "A000005", "first": "Gianni", "sur": "Agnelli", "fid": "A000003", "mid": "A000004", "dob": "1921-03-12", "dod": "2003-01-24", "sp": ["A000007"], "family_id": "F001", "branch": "Gianni", "gender": "M", "alive": false, "conf": 99}, {"id": "A000006", "first": "Umberto", "sur": "Agnelli", "fid": "A000003", "mid": "A000004", "dob": "1934-11-01", "dod": "2004-05-27", "sp": ["A000017", "A000016"], "family_id": "F001", "branch": "Umberto", "gender": "M", "alive": false, "conf": 95}, {"id": "A000007", "first": "Marella", "sur": "Caracciolo di Castagneto", "fid": null, "mid": null, "dob": "1927-05-04", "dod": "2019-02-23", "sp": ["A000005"], "family_id": "F001", "branch": "Spouse", "gender": "F", "alive": false, "conf": 99}, {"id": "A000008", "first": "Edoardo", "sur": "Agnelli", "fid": "A000005", "mid": "A000007", "dob": "1954-06-09", "dod": "2000-11-15", "sp": [], "family_id": "F001", "branch": "Gianni", "gender": "M", "alive": false, "conf": 99}, {"id": "A000009", "first": "Margherita", "sur": "Agnelli", "fid": "A000005", "mid": "A000007", "dob": "1955-10-26", "dod": null, "sp": ["A000010", "A000019"], "family_id": "F001", "branch": "Gianni", "gender": "F", "alive": true, "conf": 99}, {"id": "A000010", "first": "Alain", "sur": "Elkann", "fid": null, "mid": null, "dob": "1950-03-23", "dod": null, "sp": ["A000009"], "family_id": "F001", "branch": "Spouse", "gender": "M", "alive": true, "conf": 95}, {"id": "A000011", "first": "John", "sur": "Elkann", "fid": "A000010", "mid": "A000009", "dob": "1976-04-01", "dod": null, "sp": ["A000014"], "family_id": "F001", "branch": "Elkann", "gender": "M", "alive": true, "conf": 99}, {"id": "A000012", "first": "Lapo", "sur": "Elkann", "fid": "A000010", "mid": "A000009", "dob": "1977-10-07", "dod": null, "sp": [], "family_id": "F001", "branch": "Elkann", "gender": "M", "alive": true, "conf": 99}, {"id": "A000013", "first": "Ginevra", "sur": "Elkann", "fid": "A000010", "mid": "A000009", "dob": "1979-09-24", "dod": null, "sp": [], "family_id": "F001", "branch": "Elkann", "gender": "F", "alive": true, "conf": 99}, {"id": "A000014", "first": "Lavinia", "sur": "Borromeo", "fid": null, "mid": null, "dob": "1977-03-10", "dod": null, "sp": ["A000011"], "family_id": "F001", "branch": "Spouse", "gender": "F", "alive": true, "conf": 90}, {"id": "A000015", "first": "Andrea", "sur": "Agnelli", "fid": "A000006", "mid": "A000016", "dob": "1975-12-06", "dod": null, "sp": [], "family_id": "F001", "branch": "Umberto", "gender": "M", "alive": true, "conf": 95}, {"id": "A000016", "first": "Allegra", "sur": "Caracciolo", "fid": null, "mid": null, "dob": "1945", "dod": null, "sp": ["A000006"], "family_id": "F001", "branch": "Spouse", "gender": "F", "alive": true, "conf": 85}, {"id": "A000017", "first": "Antonella", "sur": "Bechi Piaggio", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["A000006"], "family_id": "F001", "branch": "Spouse", "gender": "F", "alive": false, "conf": 80}, {"id": "A000018", "first": "Giovanni", "sur": "Agnelli", "fid": "A000006", "mid": "A000017", "dob": "1964-04-19", "dod": "1997-12-13", "sp": [], "family_id": "F001", "branch": "Umberto", "gender": "M", "alive": false, "conf": 95}, {"id": "A000019", "first": "Serge", "sur": "de Pahlen", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["A000009"], "family_id": "F001", "branch": "Spouse", "gender": "M", "alive": true, "conf": 85}]}, {"id": "F002", "name": "Del Vecchio", "surname": "Del Vecchio", "assets": "Luxottica / Delfin / EssilorLuxottica", "geo": "Milano", "color": "#8b5e8b", "members": [{"id": "D000001", "first": "Leonardo", "sur": "Del Vecchio", "fid": null, "mid": null, "dob": "1935-05-22", "dod": "2022-06-27", "sp": ["D000002", "D000003", "D000004"], "family_id": "F002", "branch": "Founder", "gender": "M", "alive": false, "conf": 99}, {"id": "D000002", "first": "Luciana", "sur": "Nervo", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["D000001"], "family_id": "F002", "branch": "Spouse", "gender": "F", "alive": true, "conf": 80}, {"id": "D000003", "first": "Nicoletta", "sur": "Zampillo", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["D000001"], "family_id": "F002", "branch": "Spouse", "gender": "F", "alive": true, "conf": 85}, {"id": "D000004", "first": "Sabina", "sur": "Grossi", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["D000001"], "family_id": "F002", "branch": "Spouse", "gender": "F", "alive": true, "conf": 80}, {"id": "D000005", "first": "Claudio", "sur": "Del Vecchio", "fid": "D000001", "mid": "D000002", "dob": null, "dod": null, "sp": [], "family_id": "F002", "branch": "Leonardo", "gender": "M", "alive": true, "conf": 95}, {"id": "D000006", "first": "Paola", "sur": "Del Vecchio", "fid": "D000001", "mid": "D000002", "dob": null, "dod": null, "sp": [], "family_id": "F002", "branch": "Leonardo", "gender": "F", "alive": true, "conf": 95}, {"id": "D000007", "first": "Marisa", "sur": "Del Vecchio", "fid": "D000001", "mid": "D000002", "dob": null, "dod": null, "sp": [], "family_id": "F002", "branch": "Leonardo", "gender": "F", "alive": true, "conf": 95}, {"id": "D000008", "first": "Leonardo", "sur": "Del Vecchio", "fid": "D000001", "mid": "D000003", "dob": "1995-05-06", "dod": null, "sp": [], "family_id": "F002", "branch": "Leonardo", "gender": "M", "alive": true, "conf": 95}, {"id": "D000009", "first": "Luca", "sur": "Del Vecchio", "fid": "D000001", "mid": "D000004", "dob": "2001", "dod": null, "sp": [], "family_id": "F002", "branch": "Leonardo", "gender": "M", "alive": true, "conf": 95}, {"id": "D000010", "first": "Clemente", "sur": "Del Vecchio", "fid": "D000001", "mid": "D000004", "dob": "2004", "dod": null, "sp": [], "family_id": "F002", "branch": "Leonardo", "gender": "M", "alive": true, "conf": 95}]}, {"id": "F003", "name": "Benetton", "surname": "Benetton", "assets": "Edizione / Benetton Group / infrastructure assets", "geo": "Treviso", "color": "#5a8bc8", "members": [{"id": "BE000001", "first": "Leone", "sur": "Benetton", "fid": null, "mid": null, "dob": null, "dod": "1945", "sp": ["BE000002"], "family_id": "F003", "branch": "Founder parents", "gender": "M", "alive": false, "conf": 85}, {"id": "BE000002", "first": "Rosa", "sur": "Zanin", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["BE000001"], "family_id": "F003", "branch": "Founder parents", "gender": "F", "alive": false, "conf": 70}, {"id": "BE000003", "first": "Luciano", "sur": "Benetton", "fid": "BE000001", "mid": "BE000002", "dob": "1935-05-13", "dod": null, "sp": ["BE000020", "BE000021"], "family_id": "F003", "branch": "Luciano", "gender": "M", "alive": true, "conf": 99}, {"id": "BE000004", "first": "Giuliana", "sur": "Benetton", "fid": "BE000001", "mid": "BE000002", "dob": "1937-07-08", "dod": null, "sp": ["BE000022"], "family_id": "F003", "branch": "Giuliana", "gender": "F", "alive": true, "conf": 99}, {"id": "BE000005", "first": "Gilberto", "sur": "Benetton", "fid": "BE000001", "mid": "BE000002", "dob": "1941-06-19", "dod": "2018-10-22", "sp": ["BE000023"], "family_id": "F003", "branch": "Gilberto", "gender": "M", "alive": false, "conf": 99}, {"id": "BE000006", "first": "Carlo", "sur": "Benetton", "fid": "BE000001", "mid": "BE000002", "dob": "1943-12-26", "dod": "2018-07-10", "sp": [], "family_id": "F003", "branch": "Carlo", "gender": "M", "alive": false, "conf": 99}, {"id": "BE000007", "first": "Mauro", "sur": "Benetton", "fid": "BE000003", "mid": "BE000020", "dob": "1962-06-16", "dod": null, "sp": [], "family_id": "F003", "branch": "Luciano", "gender": "M", "alive": true, "conf": 99}, {"id": "BE000008", "first": "Alessandro", "sur": "Benetton", "fid": "BE000003", "mid": "BE000020", "dob": "1964-03-02", "dod": null, "sp": ["BE000024"], "family_id": "F003", "branch": "Luciano", "gender": "M", "alive": true, "conf": 99}, {"id": "BE000009", "first": "Rossella", "sur": "Benetton", "fid": "BE000003", "mid": "BE000020", "dob": "1965-06-23", "dod": null, "sp": [], "family_id": "F003", "branch": "Luciano", "gender": "F", "alive": true, "conf": 99}, {"id": "BE000010", "first": "Rocco", "sur": "Benetton", "fid": "BE000003", "mid": "BE000020", "dob": "1969-09-29", "dod": null, "sp": [], "family_id": "F003", "branch": "Luciano", "gender": "M", "alive": true, "conf": 99}, {"id": "BE000011", "first": "Brando", "sur": "Benetton", "fid": "BE000003", "mid": "BE000021", "dob": null, "dod": null, "sp": [], "family_id": "F003", "branch": "Luciano", "gender": "M", "alive": true, "conf": 85}, {"id": "BE000012", "first": "Paola", "sur": "Bertagnin Benetton", "fid": "BE000022", "mid": "BE000004", "dob": null, "dod": null, "sp": [], "family_id": "F003", "branch": "Giuliana", "gender": "F", "alive": true, "conf": 95}, {"id": "BE000013", "first": "Franca", "sur": "Bertagnin Benetton", "fid": "BE000022", "mid": "BE000004", "dob": null, "dod": null, "sp": [], "family_id": "F003", "branch": "Giuliana", "gender": "F", "alive": true, "conf": 95}, {"id": "BE000014", "first": "Daniela", "sur": "Bertagnin Benetton", "fid": "BE000022", "mid": "BE000004", "dob": null, "dod": null, "sp": [], "family_id": "F003", "branch": "Giuliana", "gender": "F", "alive": true, "conf": 95}, {"id": "BE000015", "first": "Carlo", "sur": "Bertagnin Benetton", "fid": "BE000022", "mid": "BE000004", "dob": null, "dod": null, "sp": [], "family_id": "F003", "branch": "Giuliana", "gender": "M", "alive": true, "conf": 95}, {"id": "BE000016", "first": "Barbara", "sur": "Benetton", "fid": "BE000005", "mid": "BE000023", "dob": null, "dod": null, "sp": [], "family_id": "F003", "branch": "Gilberto", "gender": "F", "alive": true, "conf": 95}, {"id": "BE000017", "first": "Sabrina", "sur": "Benetton", "fid": "BE000005", "mid": "BE000023", "dob": null, "dod": null, "sp": ["BE000025"], "family_id": "F003", "branch": "Gilberto", "gender": "F", "alive": true, "conf": 95}, {"id": "BE000018", "first": "Stefano", "sur": "Benetton", "fid": "BE000006", "mid": null, "dob": "1967", "dod": "1985", "sp": [], "family_id": "F003", "branch": "Carlo", "gender": "M", "alive": false, "conf": 95}, {"id": "BE000019", "first": "Massimo", "sur": "Benetton", "fid": "BE000006", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F003", "branch": "Carlo", "gender": "M", "alive": true, "conf": 95}, {"id": "BE000020", "first": "Maria", "sur": "Benetton", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["BE000003"], "family_id": "F003", "branch": "Spouse", "gender": "F", "alive": true, "conf": 80}, {"id": "BE000021", "first": "Marina", "sur": "Salomon", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["BE000003"], "family_id": "F003", "branch": "Spouse", "gender": "F", "alive": true, "conf": 70}, {"id": "BE000022", "first": "Fioravante", "sur": "Bertagnin", "fid": null, "mid": null, "dob": null, "dod": "2018", "sp": ["BE000004"], "family_id": "F003", "branch": "Spouse", "gender": "M", "alive": false, "conf": 90}, {"id": "BE000023", "first": "Laura", "sur": "Pasquotti", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["BE000005"], "family_id": "F003", "branch": "Spouse", "gender": "F", "alive": true, "conf": 85}, {"id": "BE000024", "first": "Deborah", "sur": "Compagnoni", "fid": null, "mid": null, "dob": "1970-06-04", "dod": null, "sp": ["BE000008"], "family_id": "F003", "branch": "Spouse", "gender": "F", "alive": true, "conf": 85}, {"id": "BE000025", "first": "Ermanno", "sur": "Boffa", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["BE000017"], "family_id": "F003", "branch": "Spouse", "gender": "M", "alive": true, "conf": 80}, {"id": "BE000026", "first": "Andrea", "sur": "Benetton", "fid": "BE000006", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F003", "branch": "Carlo", "gender": "M", "alive": true, "conf": 95}, {"id": "BE000027", "first": "Christian", "sur": "Benetton", "fid": "BE000006", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F003", "branch": "Carlo", "gender": "M", "alive": true, "conf": 95}, {"id": "BE000028", "first": "Leone", "sur": "Benetton", "fid": "BE000006", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F003", "branch": "Carlo", "gender": "M", "alive": true, "conf": 95}]}, {"id": "F004", "name": "Berlusconi", "surname": "Berlusconi", "assets": "Fininvest / MFE / Mondadori / politics", "geo": "Milano", "color": "#c85a5a", "members": [{"id": "B000001", "first": "Luigi", "sur": "Berlusconi", "fid": null, "mid": null, "dob": "1908", "dod": "1989", "sp": ["B000002"], "family_id": "F004", "branch": "Parents", "gender": "M", "alive": false, "conf": 95}, {"id": "B000002", "first": "Rosa", "sur": "Bossi", "fid": null, "mid": null, "dob": "1911", "dod": "2008", "sp": ["B000001"], "family_id": "F004", "branch": "Parents", "gender": "F", "alive": false, "conf": 95}, {"id": "B000003", "first": "Silvio", "sur": "Berlusconi", "fid": "B000001", "mid": "B000002", "dob": "1936-09-29", "dod": "2023-06-12", "sp": ["B000004", "B000005"], "family_id": "F004", "branch": "Silvio", "gender": "M", "alive": false, "conf": 99}, {"id": "B000004", "first": "Carla", "sur": "Dall'Oglio", "fid": null, "mid": null, "dob": "1940", "dod": null, "sp": ["B000003"], "family_id": "F004", "branch": "Spouse", "gender": "F", "alive": true, "conf": 95}, {"id": "B000005", "first": "Veronica", "sur": "Lario", "fid": null, "mid": null, "dob": "1956-07-19", "dod": null, "sp": ["B000003"], "family_id": "F004", "branch": "Spouse", "gender": "F", "alive": true, "conf": 95}, {"id": "B000006", "first": "Marina", "sur": "Berlusconi", "fid": "B000003", "mid": "B000004", "dob": "1966-08-10", "dod": null, "sp": [], "family_id": "F004", "branch": "First marriage", "gender": "F", "alive": true, "conf": 99}, {"id": "B000007", "first": "Pier", "sur": "Berlusconi", "fid": "B000003", "mid": "B000004", "dob": "1969-04-28", "dod": null, "sp": [], "family_id": "F004", "branch": "First marriage", "gender": "M", "alive": true, "conf": 99}, {"id": "B000008", "first": "Barbara", "sur": "Berlusconi", "fid": "B000003", "mid": "B000005", "dob": "1984-07-30", "dod": null, "sp": [], "family_id": "F004", "branch": "Second marriage", "gender": "F", "alive": true, "conf": 99}, {"id": "B000009", "first": "Eleonora", "sur": "Berlusconi", "fid": "B000003", "mid": "B000005", "dob": "1986-05-10", "dod": null, "sp": [], "family_id": "F004", "branch": "Second marriage", "gender": "F", "alive": true, "conf": 99}, {"id": "B000010", "first": "Luigi", "sur": "Berlusconi", "fid": "B000003", "mid": "B000005", "dob": "1988-09-27", "dod": null, "sp": [], "family_id": "F004", "branch": "Second marriage", "gender": "M", "alive": true, "conf": 99}]}, {"id": "F005", "name": "Doris", "surname": "Doris", "assets": "Banca Mediolanum", "geo": "Milano", "color": "#5aab78", "members": [{"id": "DO000001", "first": "Ennio", "sur": "Doris", "fid": null, "mid": null, "dob": "1940-07-03", "dod": "2021-11-24", "sp": ["DO000002"], "family_id": "F005", "branch": "Founder", "gender": "M", "alive": false, "conf": 99}, {"id": "DO000002", "first": "Lina", "sur": "Tombolato", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["DO000001"], "family_id": "F005", "branch": "Spouse", "gender": "F", "alive": true, "conf": 95}, {"id": "DO000003", "first": "Massimo", "sur": "Doris", "fid": "DO000001", "mid": "DO000002", "dob": "1967-06-03", "dod": null, "sp": [], "family_id": "F005", "branch": "Doris", "gender": "M", "alive": true, "conf": 95}, {"id": "DO000004", "first": "Sara", "sur": "Doris", "fid": "DO000001", "mid": "DO000002", "dob": null, "dod": null, "sp": [], "family_id": "F005", "branch": "Doris", "gender": "F", "alive": true, "conf": 90}]}, {"id": "F006", "name": "Bombassei", "surname": "Bombassei", "assets": "Brembo", "geo": "Bergamo", "color": "#c8875a", "members": [{"id": "BO000001", "first": "Emilio", "sur": "Bombassei", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F006", "branch": "Founder", "gender": "M", "alive": false, "conf": 95}, {"id": "BO000002", "first": "Alberto", "sur": "Bombassei", "fid": "BO000001", "mid": null, "dob": "1940-10", "dod": null, "sp": [], "family_id": "F006", "branch": "Alberto", "gender": "M", "alive": true, "conf": 99}, {"id": "BO000003", "first": "Sergio", "sur": "Bombassei", "fid": "BO000001", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F006", "branch": "Sergio", "gender": "M", "alive": true, "conf": 85}, {"id": "BO000004", "first": "Cristina", "sur": "Bombassei", "fid": "BO000002", "mid": null, "dob": null, "dod": null, "sp": ["BO000006"], "family_id": "F006", "branch": "Alberto", "gender": "F", "alive": true, "conf": 95}, {"id": "BO000005", "first": "Luca", "sur": "Bombassei", "fid": "BO000002", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F006", "branch": "Alberto", "gender": "M", "alive": true, "conf": 90}, {"id": "BO000006", "first": "Matteo", "sur": "Tiraboschi", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["BO000004"], "family_id": "F006", "branch": "Spouse", "gender": "M", "alive": true, "conf": 95}]}, {"id": "F007", "name": "Rocca", "surname": "Rocca", "assets": "Techint / Tenaris / Ternium", "geo": "Milan / Buenos Aires", "color": "#5a9898", "members": [{"id": "R000001", "first": "Agostino", "sur": "Rocca", "fid": null, "mid": null, "dob": "1895-05-25", "dod": "1978-02-17", "sp": [], "family_id": "F007", "branch": "Founder", "gender": "M", "alive": false, "conf": 99}, {"id": "R000002", "first": "Roberto", "sur": "Rocca", "fid": "R000001", "mid": null, "dob": "1922", "dod": "2003", "sp": ["R000003"], "family_id": "F007", "branch": "Roberto", "gender": "M", "alive": false, "conf": 95}, {"id": "R000003", "first": "Andreina", "sur": "Bassetti", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["R000002"], "family_id": "F007", "branch": "Spouse", "gender": "F", "alive": false, "conf": 75}, {"id": "R000004", "first": "Gianfelice", "sur": "Rocca", "fid": "R000002", "mid": "R000003", "dob": "1948-03-02", "dod": null, "sp": [], "family_id": "F007", "branch": "Roberto", "gender": "M", "alive": true, "conf": 95}, {"id": "R000005", "first": "Paolo", "sur": "Rocca", "fid": "R000002", "mid": "R000003", "dob": "1952-10-14", "dod": null, "sp": [], "family_id": "F007", "branch": "Roberto", "gender": "M", "alive": true, "conf": 99}]}, {"id": "F008", "name": "Caltagirone", "surname": "Caltagirone", "assets": "Caltagirone Group / Cementir / publishing / real estate", "geo": "Roma", "color": "#ab8b5a", "members": [{"id": "C000001", "first": "Francesco", "sur": "Caltagirone", "fid": null, "mid": null, "dob": "1943-03-02", "dod": null, "sp": ["C000002"], "family_id": "F008", "branch": "Founder/current", "gender": "M", "alive": true, "conf": 99}, {"id": "C000002", "first": "Luisa", "sur": "Farinon", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["C000001"], "family_id": "F008", "branch": "Spouse", "gender": "F", "alive": true, "conf": 85}, {"id": "C000003", "first": "Francesco", "sur": "Caltagirone Jr", "fid": "C000001", "mid": "C000002", "dob": "1968", "dod": null, "sp": [], "family_id": "F008", "branch": "Francesco Gaetano", "gender": "M", "alive": true, "conf": 99}, {"id": "C000004", "first": "Alessandro", "sur": "Caltagirone", "fid": "C000001", "mid": "C000002", "dob": "1969", "dod": null, "sp": [], "family_id": "F008", "branch": "Francesco Gaetano", "gender": "M", "alive": true, "conf": 99}, {"id": "C000005", "first": "Azzurra", "sur": "Caltagirone", "fid": "C000001", "mid": "C000002", "dob": "1973", "dod": null, "sp": ["C000006"], "family_id": "F008", "branch": "Francesco Gaetano", "gender": "F", "alive": true, "conf": 99}, {"id": "C000006", "first": "Pier", "sur": "Casini", "fid": null, "mid": null, "dob": "1955-12-03", "dod": null, "sp": ["C000005"], "family_id": "F008", "branch": "Spouse", "gender": "M", "alive": true, "conf": 80}]}, {"id": "F009", "name": "Marzotto", "surname": "Marzotto", "assets": "Textiles / Santa Margherita / Zignago / Jolly Hotels legacy", "geo": "Valdagno / Vicenza", "color": "#7a5ac8", "members": [{"id": "M000001", "first": "Luigi", "sur": "Marzotto", "fid": null, "mid": null, "dob": "1773", "dod": "1859", "sp": [], "family_id": "F009", "branch": "Early industrial", "gender": "M", "alive": false, "conf": 95}, {"id": "M000002", "first": "Angela", "sur": "Pedrazza", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["M000001"], "family_id": "F009", "branch": "Spouse", "gender": "F", "alive": false, "conf": 90}, {"id": "M000003", "first": "Gaetano", "sur": "Marzotto Sr", "fid": "M000001", "mid": "M000002", "dob": "1820", "dod": "1910", "sp": [], "family_id": "F009", "branch": "Gaetano Sr", "gender": "M", "alive": false, "conf": 95}, {"id": "M000004", "first": "Anna", "sur": "Tomba", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["M000003"], "family_id": "F009", "branch": "Spouse", "gender": "F", "alive": false, "conf": 90}, {"id": "M000005", "first": "Luigi", "sur": "Marzotto", "fid": "M000003", "mid": "M000004", "dob": null, "dod": null, "sp": ["M000010"], "family_id": "F009", "branch": "Luigi", "gender": "M", "alive": false, "conf": 95}, {"id": "M000006", "first": "Vittorio", "sur": "Marzotto", "fid": "M000003", "mid": null, "dob": "1858", "dod": "1922", "sp": [], "family_id": "F009", "branch": "Vittorio Emanuele", "gender": "M", "alive": false, "conf": 90}, {"id": "M000007", "first": "Alessandro", "sur": "Marzotto", "fid": "M000003", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F009", "branch": "Alessandro", "gender": "M", "alive": false, "conf": 85}, {"id": "M000008", "first": "Gaetano", "sur": "Marzotto Jr", "fid": "M000006", "mid": null, "dob": "1894", "dod": "1972", "sp": ["M000010"], "family_id": "F009", "branch": "Gaetano Jr", "gender": "M", "alive": false, "conf": 95}, {"id": "M000010", "first": "Margherita", "sur": "Lampertico", "fid": null, "mid": null, "dob": "1898", "dod": "1939", "sp": ["M000008"], "family_id": "F009", "branch": "Spouse", "gender": "F", "alive": false, "conf": 95}, {"id": "M000011", "first": "Vittorio", "sur": "Marzotto", "fid": "M000008", "mid": "M000010", "dob": "1922", "dod": "1999", "sp": [], "family_id": "F009", "branch": "Gaetano Jr", "gender": "M", "alive": false, "conf": 95}, {"id": "M000012", "first": "Italia", "sur": "Marzotto", "fid": "M000008", "mid": "M000010", "dob": "1925", "dod": "2000", "sp": [], "family_id": "F009", "branch": "Gaetano Jr", "gender": "F", "alive": false, "conf": 95}, {"id": "M000013", "first": "Umberto", "sur": "Marzotto", "fid": "M000008", "mid": "M000010", "dob": "1926", "dod": "2018", "sp": ["M000020"], "family_id": "F009", "branch": "Gaetano Jr", "gender": "M", "alive": false, "conf": 95}, {"id": "M000014", "first": "Giannino", "sur": "Marzotto", "fid": "M000008", "mid": "M000010", "dob": "1928-04-13", "dod": "2012-07-14", "sp": [], "family_id": "F009", "branch": "Gaetano Jr", "gender": "M", "alive": false, "conf": 95}, {"id": "M000015", "first": "Paolo", "sur": "Marzotto", "fid": "M000008", "mid": "M000010", "dob": "1930", "dod": "2020", "sp": [], "family_id": "F009", "branch": "Gaetano Jr", "gender": "M", "alive": false, "conf": 95}, {"id": "M000016", "first": "Laura", "sur": "Marzotto", "fid": "M000008", "mid": "M000010", "dob": "1933", "dod": null, "sp": [], "family_id": "F009", "branch": "Gaetano Jr", "gender": "F", "alive": true, "conf": 95}, {"id": "M000017", "first": "Pietro", "sur": "Marzotto", "fid": "M000008", "mid": "M000010", "dob": "1937-12-11", "dod": "2018-04-26", "sp": [], "family_id": "F009", "branch": "Gaetano Jr", "gender": "M", "alive": false, "conf": 95}, {"id": "M000020", "first": "Marta", "sur": "Vacondio Marzotto", "fid": null, "mid": null, "dob": "1931-02-24", "dod": "2016-07-29", "sp": ["M000013"], "family_id": "F009", "branch": "Spouse", "gender": "F", "alive": false, "conf": 90}, {"id": "M000021", "first": "Matteo", "sur": "Marzotto", "fid": "M000013", "mid": "M000020", "dob": "1966-09-26", "dod": null, "sp": [], "family_id": "F009", "branch": "Umberto", "gender": "M", "alive": true, "conf": 95}, {"id": "M000022", "first": "Paola", "sur": "Marzotto", "fid": "M000013", "mid": "M000020", "dob": null, "dod": null, "sp": [], "family_id": "F009", "branch": "Umberto", "gender": "F", "alive": true, "conf": 75}, {"id": "M000023", "first": "Annalisa", "sur": "Marzotto", "fid": "M000013", "mid": "M000020", "dob": null, "dod": null, "sp": [], "family_id": "F009", "branch": "Umberto", "gender": "F", "alive": true, "conf": 75}, {"id": "M000024", "first": "Vittorio", "sur": "Marzotto", "fid": "M000013", "mid": "M000020", "dob": null, "dod": null, "sp": [], "family_id": "F009", "branch": "Umberto", "gender": "M", "alive": true, "conf": 75}, {"id": "M000025", "first": "Diamante", "sur": "Marzotto", "fid": "M000013", "mid": "M000020", "dob": null, "dod": null, "sp": [], "family_id": "F009", "branch": "Umberto", "gender": "F", "alive": true, "conf": 75}]}, {"id": "F010", "name": "Gussalli Beretta", "surname": "Gussalli Beretta", "assets": "Beretta Holding / Fabbrica d'Armi Pietro Beretta", "geo": "Gardone Val Trompia / Brescia", "color": "#8bab5a", "members": [{"id": "G000001", "first": "Ugo", "sur": "Gussalli Beretta", "fid": null, "mid": null, "dob": "1937", "dod": null, "sp": [], "family_id": "F010", "branch": "Ugo", "gender": "M", "alive": true, "conf": 99}, {"id": "G000002", "first": "Pietro", "sur": "Gussalli Beretta", "fid": "G000001", "mid": null, "dob": "1962-02-28", "dod": null, "sp": [], "family_id": "F010", "branch": "Ugo", "gender": "M", "alive": true, "conf": 99}, {"id": "G000003", "first": "Franco", "sur": "Gussalli Beretta", "fid": "G000001", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F010", "branch": "Ugo", "gender": "M", "alive": true, "conf": 99}, {"id": "G000004", "first": "Carlo", "sur": "Gussalli Beretta", "fid": "G000003", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F010", "branch": "Franco", "gender": "M", "alive": true, "conf": 70}]}, {"id": "F011", "name": "Aleotti", "surname": "Aleotti", "assets": "Menarini", "geo": "Firenze", "color": "#c85a8b", "members": [{"id": "AL000001", "first": "Alberto", "sur": "Aleotti", "fid": null, "mid": null, "dob": "1923-10-10", "dod": "2014-05-21", "sp": ["AL000002"], "family_id": "F011", "branch": "Aleotti", "gender": "M", "alive": false, "conf": 90}, {"id": "AL000002", "first": "Massimiliana", "sur": "Aleotti", "fid": null, "mid": null, "dob": "1942-08-07", "dod": null, "sp": ["AL000001"], "family_id": "F011", "branch": "Spouse", "gender": "F", "alive": true, "conf": 90}, {"id": "AL000003", "first": "Lucia", "sur": "Aleotti", "fid": "AL000001", "mid": "AL000002", "dob": null, "dod": null, "sp": [], "family_id": "F011", "branch": "Aleotti", "gender": "F", "alive": true, "conf": 90}, {"id": "AL000004", "first": "Alberto", "sur": "Aleotti", "fid": "AL000001", "mid": "AL000002", "dob": null, "dod": null, "sp": [], "family_id": "F011", "branch": "Aleotti", "gender": "M", "alive": true, "conf": 90}]}, {"id": "F012", "name": "Caprotti", "surname": "Caprotti", "assets": "Esselunga / Supermarkets Italiani", "geo": "Milano / Brianza", "color": "#5aabc8", "members": [{"id": "CA000001", "first": "Bernardo", "sur": "Caprotti", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F012", "branch": "Caprotti textile origin", "gender": "M", "alive": false, "conf": 75}, {"id": "CA000002", "first": "Giuseppe", "sur": "Caprotti", "fid": "CA000001", "mid": null, "dob": null, "dod": "1952-06", "sp": ["CA000003"], "family_id": "F012", "branch": "Caprotti", "gender": "M", "alive": false, "conf": 80}, {"id": "CA000003", "first": "Marianne", "sur": "Caprotti", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["CA000002"], "family_id": "F012", "branch": "Spouse", "gender": "F", "alive": false, "conf": 75}, {"id": "CA000004", "first": "Bernardo", "sur": "Caprotti", "fid": "CA000002", "mid": "CA000003", "dob": "1925-10-07", "dod": "2016-09-30", "sp": ["CA000005", "CA000008"], "family_id": "F012", "branch": "Esselunga", "gender": "M", "alive": false, "conf": 95}, {"id": "CA000005", "first": "Giorgina", "sur": "Venosta", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["CA000004"], "family_id": "F012", "branch": "Spouse", "gender": "F", "alive": false, "conf": 75}, {"id": "CA000006", "first": "Giuseppe", "sur": "Caprotti", "fid": "CA000004", "mid": "CA000005", "dob": null, "dod": null, "sp": [], "family_id": "F012", "branch": "First marriage", "gender": "M", "alive": true, "conf": 90}, {"id": "CA000007", "first": "Violetta", "sur": "Caprotti", "fid": "CA000004", "mid": "CA000005", "dob": null, "dod": null, "sp": [], "family_id": "F012", "branch": "First marriage", "gender": "F", "alive": true, "conf": 90}, {"id": "CA000008", "first": "Giuliana", "sur": "Albera", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["CA000004"], "family_id": "F012", "branch": "Spouse", "gender": "F", "alive": true, "conf": 90}, {"id": "CA000009", "first": "Marina", "sur": "Caprotti", "fid": "CA000004", "mid": "CA000008", "dob": null, "dod": null, "sp": [], "family_id": "F012", "branch": "Second marriage", "gender": "F", "alive": true, "conf": 90}, {"id": "CA000010", "first": "Guido", "sur": "Caprotti", "fid": "CA000002", "mid": "CA000003", "dob": null, "dod": null, "sp": [], "family_id": "F012", "branch": "Sibling of Bernardo", "gender": "M", "alive": false, "conf": 75}, {"id": "CA000011", "first": "Claudio", "sur": "Caprotti", "fid": "CA000002", "mid": "CA000003", "dob": null, "dod": null, "sp": [], "family_id": "F012", "branch": "Sibling of Bernardo", "gender": "M", "alive": false, "conf": 75}]}, {"id": "F013", "name": "Garrone-Mondini", "surname": "Garrone / Mondini", "assets": "ERG / San Quirico / Fondazione Garrone", "geo": "Genova", "color": "#c8ab5a", "members": [{"id": "GA000001", "first": "Edoardo", "sur": "Garrone", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F013", "branch": "Founder", "gender": "M", "alive": false, "conf": 90}, {"id": "GA000002", "first": "Riccardo", "sur": "Garrone", "fid": "GA000001", "mid": null, "dob": "1936-01-23", "dod": "2013-01-21", "sp": ["GA000003"], "family_id": "F013", "branch": "Garrone", "gender": "M", "alive": false, "conf": 85}, {"id": "GA000003", "first": "Laura", "sur": "Mondini", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["GA000002"], "family_id": "F013", "branch": "Mondini spouse", "gender": "F", "alive": false, "conf": 80}, {"id": "GA000004", "first": "Edoardo", "sur": "Garrone", "fid": "GA000002", "mid": "GA000003", "dob": "1961-12-30", "dod": null, "sp": [], "family_id": "F013", "branch": "Garrone-Mondini", "gender": "M", "alive": true, "conf": 95}, {"id": "GA000005", "first": "Alessandro", "sur": "Garrone", "fid": "GA000002", "mid": "GA000003", "dob": "1963-04-28", "dod": null, "sp": [], "family_id": "F013", "branch": "Garrone-Mondini", "gender": "M", "alive": true, "conf": 95}, {"id": "GA000006", "first": "Vittorio", "sur": "Garrone", "fid": "GA000002", "mid": "GA000003", "dob": null, "dod": null, "sp": [], "family_id": "F013", "branch": "Garrone-Mondini", "gender": "M", "alive": true, "conf": 75}, {"id": "GA000007", "first": "Filippo", "sur": "Garrone", "fid": "GA000002", "mid": "GA000003", "dob": null, "dod": null, "sp": [], "family_id": "F013", "branch": "Garrone-Mondini", "gender": "M", "alive": true, "conf": 75}]}, {"id": "F014", "name": "De Benedetti", "surname": "De Benedetti", "assets": "CIR / GEDI / industrial-financial legacy", "geo": "Torino / Milano", "color": "#5a78c8", "members": [{"id": "DB000001", "first": "Rodolfo", "sur": "De Benedetti", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["DB000002"], "family_id": "F014", "branch": "Founder parent", "gender": "M", "alive": false, "conf": 75}, {"id": "DB000002", "first": "Pierina", "sur": "Fumel", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["DB000001"], "family_id": "F014", "branch": "Spouse", "gender": "F", "alive": false, "conf": 75}, {"id": "DB000003", "first": "Carlo", "sur": "De Benedetti", "fid": "DB000001", "mid": "DB000002", "dob": "1934-11-14", "dod": null, "sp": ["DB000004"], "family_id": "F014", "branch": "De Benedetti", "gender": "M", "alive": true, "conf": 90}, {"id": "DB000004", "first": "Mita", "sur": "Crosetti", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["DB000003"], "family_id": "F014", "branch": "Spouse", "gender": "F", "alive": true, "conf": 80}, {"id": "DB000005", "first": "Rodolfo", "sur": "De Benedetti", "fid": "DB000003", "mid": "DB000004", "dob": "1961-07-02", "dod": null, "sp": ["DB000008"], "family_id": "F014", "branch": "Second generation", "gender": "M", "alive": true, "conf": 95}, {"id": "DB000006", "first": "Marco", "sur": "De Benedetti", "fid": "DB000003", "mid": "DB000004", "dob": null, "dod": null, "sp": ["DB000009"], "family_id": "F014", "branch": "Second generation", "gender": "M", "alive": true, "conf": 85}, {"id": "DB000007", "first": "Edoardo", "sur": "De Benedetti", "fid": "DB000003", "mid": "DB000004", "dob": null, "dod": null, "sp": ["DB000010"], "family_id": "F014", "branch": "Second generation", "gender": "M", "alive": true, "conf": 85}, {"id": "DB000008", "first": "Emmanuelle", "sur": "de Villepin", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["DB000005"], "family_id": "F014", "branch": "Spouse", "gender": "F", "alive": true, "conf": 80}, {"id": "DB000009", "first": "Paola", "sur": "Ferrari", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["DB000006"], "family_id": "F014", "branch": "Spouse", "gender": "F", "alive": true, "conf": 75}, {"id": "DB000010", "first": "Ilgi Suna", "sur": "Erel", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["DB000007"], "family_id": "F014", "branch": "Spouse", "gender": "F", "alive": true, "conf": 75}, {"id": "DB000011", "first": "Neige", "sur": "De Benedetti", "fid": "DB000005", "mid": "DB000008", "dob": null, "dod": null, "sp": [], "family_id": "F014", "branch": "Rodolfo", "gender": "F", "alive": true, "conf": 80}, {"id": "DB000012", "first": "Alix", "sur": "De Benedetti", "fid": "DB000005", "mid": "DB000008", "dob": null, "dod": null, "sp": [], "family_id": "F014", "branch": "Rodolfo", "gender": "F", "alive": true, "conf": 80}, {"id": "DB000013", "first": "Mita", "sur": "De Benedetti", "fid": "DB000005", "mid": "DB000008", "dob": null, "dod": null, "sp": [], "family_id": "F014", "branch": "Rodolfo", "gender": "F", "alive": true, "conf": 80}, {"id": "DB000014", "first": "Alessandro", "sur": "De Benedetti", "fid": "DB000006", "mid": "DB000009", "dob": null, "dod": null, "sp": [], "family_id": "F014", "branch": "Marco", "gender": "M", "alive": true, "conf": 70}, {"id": "DB000015", "first": "Virginia", "sur": "De Benedetti", "fid": "DB000006", "mid": "DB000009", "dob": null, "dod": null, "sp": [], "family_id": "F014", "branch": "Marco", "gender": "F", "alive": true, "conf": 70}]}, {"id": "F015", "name": "Lucchini", "surname": "Lucchini", "assets": "Lucchini RS / steel legacy", "geo": "Brescia", "color": "#ab5a5a", "members": [{"id": "LU000001", "first": "Giuseppe", "sur": "Lucchini", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["LU000002"], "family_id": "F015", "branch": "Lucchini", "gender": "M", "alive": false, "conf": 90}, {"id": "LU000002", "first": "Rosina", "sur": "Freddi", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["LU000001"], "family_id": "F015", "branch": "Spouse", "gender": "F", "alive": false, "conf": 90}, {"id": "LU000003", "first": "Luigi", "sur": "Lucchini", "fid": "LU000001", "mid": "LU000002", "dob": "1919-01-21", "dod": "2013-08-26", "sp": ["LU000004"], "family_id": "F015", "branch": "Founder", "gender": "M", "alive": false, "conf": 95}, {"id": "LU000004", "first": "Emilia", "sur": "", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["LU000003"], "family_id": "F015", "branch": "Spouse", "gender": "F", "alive": false, "conf": 80}, {"id": "LU000005", "first": "Silvana", "sur": "Lucchini", "fid": "LU000003", "mid": "LU000004", "dob": null, "dod": null, "sp": [], "family_id": "F015", "branch": "Second generation", "gender": "F", "alive": true, "conf": 90}, {"id": "LU000006", "first": "Giuseppe", "sur": "Lucchini", "fid": "LU000003", "mid": "LU000004", "dob": "1952-07-02", "dod": null, "sp": [], "family_id": "F015", "branch": "Second generation", "gender": "M", "alive": true, "conf": 90}, {"id": "LU000007", "first": "Gabriella", "sur": "Lucchini", "fid": "LU000003", "mid": "LU000004", "dob": null, "dod": null, "sp": [], "family_id": "F015", "branch": "Second generation", "gender": "F", "alive": false, "conf": 85}, {"id": "LU000008", "first": "Carlo", "sur": "Lucchini", "fid": null, "mid": "LU000007", "dob": null, "dod": null, "sp": [], "family_id": "F015", "branch": "Gabriella heirs", "gender": "M", "alive": true, "conf": 70}, {"id": "LU000009", "first": "Daniele", "sur": "Lucchini", "fid": null, "mid": "LU000007", "dob": null, "dod": null, "sp": [], "family_id": "F015", "branch": "Gabriella heirs", "gender": "M", "alive": true, "conf": 70}, {"id": "LU000010", "first": "Luigi", "sur": "Lucchini", "fid": null, "mid": "LU000007", "dob": null, "dod": null, "sp": [], "family_id": "F015", "branch": "Gabriella heirs", "gender": "M", "alive": true, "conf": 70}]}, {"id": "F016", "name": "Riva", "surname": "Riva", "assets": "Riva Group / steel", "geo": "Milano", "color": "#5ac878", "members": [{"id": "RI000001", "first": "Emilio", "sur": "Riva", "fid": null, "mid": null, "dob": "1926-11-21", "dod": "2014-04-30", "sp": [], "family_id": "F016", "branch": "Founder", "gender": "M", "alive": false, "conf": 90}, {"id": "RI000002", "first": "Adriano", "sur": "Riva", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F016", "branch": "Founder sibling", "gender": "M", "alive": false, "conf": 90}, {"id": "RI000003", "first": "Fabio", "sur": "Riva", "fid": "RI000001", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F016", "branch": "Emilio children", "gender": "M", "alive": true, "conf": 85}, {"id": "RI000004", "first": "Claudio", "sur": "Riva", "fid": "RI000001", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F016", "branch": "Emilio children", "gender": "M", "alive": true, "conf": 85}, {"id": "RI000005", "first": "Nicola", "sur": "Riva", "fid": "RI000001", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F016", "branch": "Emilio children", "gender": "M", "alive": true, "conf": 85}, {"id": "RI000006", "first": "Daniele", "sur": "Riva", "fid": "RI000001", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F016", "branch": "Emilio children", "gender": "M", "alive": true, "conf": 85}, {"id": "RI000007", "first": "Emilio", "sur": "Riva", "fid": "RI000003", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F016", "branch": "Third generation", "gender": "M", "alive": true, "conf": 75}, {"id": "RI000008", "first": "Cesare", "sur": "Riva", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F016", "branch": "Nephews", "gender": "M", "alive": true, "conf": 70}, {"id": "RI000009", "first": "Angelo", "sur": "Riva", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F016", "branch": "Nephews", "gender": "M", "alive": true, "conf": 70}]}, {"id": "F017", "name": "Squinzi", "surname": "Squinzi", "assets": "Mapei", "geo": "Milano", "color": "#c8785a", "members": [{"id": "SQ000001", "first": "Rodolfo", "sur": "Squinzi", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F017", "branch": "Founder", "gender": "M", "alive": false, "conf": 85}, {"id": "SQ000002", "first": "Laura", "sur": "Squinzi", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F017", "branch": "Rodolfo branch", "gender": "F", "alive": true, "conf": 80}, {"id": "SQ000003", "first": "Giorgio", "sur": "Squinzi", "fid": "SQ000001", "mid": null, "dob": "1943-05-18", "dod": "2019-10-02", "sp": ["SQ000004"], "family_id": "F017", "branch": "Giorgio", "gender": "M", "alive": false, "conf": 90}, {"id": "SQ000004", "first": "Adriana", "sur": "Spazzoli", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["SQ000003"], "family_id": "F017", "branch": "Spouse", "gender": "F", "alive": false, "conf": 90}, {"id": "SQ000005", "first": "Marco", "sur": "Squinzi", "fid": "SQ000003", "mid": "SQ000004", "dob": null, "dod": null, "sp": [], "family_id": "F017", "branch": "Giorgio", "gender": "M", "alive": true, "conf": 95}, {"id": "SQ000006", "first": "Veronica", "sur": "Squinzi", "fid": "SQ000003", "mid": "SQ000004", "dob": null, "dod": null, "sp": [], "family_id": "F017", "branch": "Giorgio", "gender": "F", "alive": true, "conf": 95}, {"id": "SQ000007", "first": "Simona", "sur": "Giorgetta", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F017", "branch": "Giorgetta cousin", "gender": "F", "alive": true, "conf": 75}]}, {"id": "F018", "name": "Percassi", "surname": "Percassi", "assets": "Percassi / KIKO / Atalanta / real estate", "geo": "Bergamo", "color": "#5ab8ab", "members": [{"id": "PE000007", "first": "Michael", "sur": "Percassi", "fid": "PE000001", "mid": null, "dob": "2013-01", "dod": null, "sp": [], "family_id": "F018", "branch": "Antonio children", "gender": "M", "alive": true, "conf": 75}]}, {"id": "F019", "name": "Radici", "surname": "Radici", "assets": "RadiciGroup / Itema / Geogreen", "geo": "Bergamo / Gandino", "color": "#ab785a", "members": [{"id": "RA000001", "first": "Pietro", "sur": "Radici", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F019", "branch": "Founder", "gender": "M", "alive": false, "conf": 90}, {"id": "RA000002", "first": "Gianni", "sur": "Radici", "fid": "RA000001", "mid": null, "dob": null, "dod": null, "sp": ["RA000003"], "family_id": "F019", "branch": "Second generation", "gender": "M", "alive": false, "conf": 80}, {"id": "RA000003", "first": "Luciana", "sur": "Previtali", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["RA000002"], "family_id": "F019", "branch": "Spouse", "gender": "F", "alive": false, "conf": 80}, {"id": "RA000004", "first": "Paolo", "sur": "Radici", "fid": "RA000002", "mid": "RA000003", "dob": "1946-12-13", "dod": "2024-09-17", "sp": [], "family_id": "F019", "branch": "Gianni children", "gender": "M", "alive": false, "conf": 90}, {"id": "RA000005", "first": "Angelo", "sur": "Radici", "fid": "RA000002", "mid": "RA000003", "dob": null, "dod": null, "sp": [], "family_id": "F019", "branch": "Gianni children", "gender": "M", "alive": true, "conf": 90}, {"id": "RA000006", "first": "Maurizio", "sur": "Radici", "fid": "RA000002", "mid": "RA000003", "dob": null, "dod": null, "sp": [], "family_id": "F019", "branch": "Gianni children", "gender": "M", "alive": true, "conf": 90}, {"id": "RA000007", "first": "Fausto", "sur": "Radici", "fid": "RA000002", "mid": "RA000003", "dob": null, "dod": null, "sp": [], "family_id": "F019", "branch": "Gianni children", "gender": "M", "alive": false, "conf": 85}]}, {"id": "F020", "name": "Merloni", "surname": "Merloni", "assets": "Industrie Merloni / Indesit / Ariston legacy", "geo": "Fabriano", "color": "#785ac8", "members": [{"id": "ME000001", "first": "Aristide", "sur": "Merloni", "fid": null, "mid": null, "dob": "1897-04-24", "dod": "1970-12-19", "sp": ["ME000002"], "family_id": "F020", "branch": "Founder", "gender": "M", "alive": false, "conf": 90}, {"id": "ME000002", "first": "Maria", "sur": "Mattioli", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["ME000001"], "family_id": "F020", "branch": "Spouse", "gender": "F", "alive": false, "conf": 95}, {"id": "ME000003", "first": "Vittorio", "sur": "Merloni", "fid": "ME000001", "mid": "ME000002", "dob": "1933-04-30", "dod": "2016-06-18", "sp": ["ME000005"], "family_id": "F020", "branch": "Vittorio", "gender": "M", "alive": false, "conf": 95}, {"id": "ME000004", "first": "Francesco", "sur": "Merloni", "fid": "ME000001", "mid": "ME000002", "dob": "1925-09-17", "dod": "2024-10-01", "sp": [], "family_id": "F020", "branch": "Francesco", "gender": "M", "alive": false, "conf": 85}, {"id": "ME000005", "first": "Franca", "sur": "Carloni", "fid": null, "mid": null, "dob": "1933", "dod": "2025-01-06", "sp": ["ME000003"], "family_id": "F020", "branch": "Spouse", "gender": "F", "alive": false, "conf": 95}, {"id": "ME000006", "first": "Maria", "sur": "Merloni", "fid": "ME000003", "mid": "ME000005", "dob": null, "dod": null, "sp": [], "family_id": "F020", "branch": "Vittorio children", "gender": "F", "alive": true, "conf": 95}, {"id": "ME000007", "first": "Antonella", "sur": "Merloni", "fid": "ME000003", "mid": "ME000005", "dob": null, "dod": null, "sp": [], "family_id": "F020", "branch": "Vittorio children", "gender": "F", "alive": true, "conf": 95}, {"id": "ME000008", "first": "Aristide", "sur": "Merloni", "fid": "ME000003", "mid": "ME000005", "dob": null, "dod": null, "sp": [], "family_id": "F020", "branch": "Vittorio children", "gender": "M", "alive": true, "conf": 95}, {"id": "ME000009", "first": "Andrea", "sur": "Merloni", "fid": "ME000003", "mid": "ME000005", "dob": null, "dod": "2020-11", "sp": [], "family_id": "F020", "branch": "Vittorio children", "gender": "M", "alive": false, "conf": 95}, {"id": "ME000010", "first": "Ester", "sur": "Merloni", "fid": "ME000001", "mid": "ME000002", "dob": null, "dod": null, "sp": [], "family_id": "F020", "branch": "Aristide", "gender": "F", "alive": false, "conf": 90}, {"id": "ME000011", "first": "Antonio", "sur": "Merloni", "fid": "ME000001", "mid": "ME000002", "dob": null, "dod": null, "sp": [], "family_id": "F020", "branch": "Aristide", "gender": "M", "alive": false, "conf": 90}]}, {"id": "F021", "name": "De Longhi", "surname": "De Longhi", "assets": "De Longhi Group / appliances", "geo": "Treviso", "color": "#78ab5a", "members": [{"id": "DL000001", "first": "Giuseppe", "sur": "De Longhi", "fid": null, "mid": null, "dob": "1939-04-24", "dod": null, "sp": ["DL000002"], "family_id": "F021", "branch": "Founder", "gender": "M", "alive": true, "conf": 90}, {"id": "DL000002", "first": "Vanna", "sur": "Mion", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["DL000001"], "family_id": "F021", "branch": "Spouse", "gender": "F", "alive": true, "conf": 70}, {"id": "DL000003", "first": "Fabio", "sur": "De Longhi", "fid": "DL000001", "mid": "DL000002", "dob": null, "dod": null, "sp": [], "family_id": "F021", "branch": "Giuseppe", "gender": "M", "alive": true, "conf": 98}, {"id": "DL000004", "first": "Giuseppe", "sur": "De Longhi", "fid": "DL000001", "mid": "DL000002", "dob": null, "dod": null, "sp": [], "family_id": "F021", "branch": "Giuseppe", "gender": "M", "alive": true, "conf": 55}]}, {"id": "F022", "name": "Marcegaglia", "surname": "Marcegaglia", "assets": "Marcegaglia Group / steel", "geo": "Mantova", "color": "#c8585a", "members": [{"id": "MA000001", "first": "Steno", "sur": "Marcegaglia", "fid": null, "mid": null, "dob": "1930-08-10", "dod": "2013-09-10", "sp": ["MA000002"], "family_id": "F022", "branch": "Founder", "gender": "M", "alive": false, "conf": 95}, {"id": "MA000002", "first": "Palmira", "sur": "Bazzani", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["MA000001"], "family_id": "F022", "branch": "Spouse", "gender": "F", "alive": true, "conf": 85}, {"id": "MA000003", "first": "Antonio", "sur": "Marcegaglia", "fid": "MA000001", "mid": "MA000002", "dob": null, "dod": null, "sp": [], "family_id": "F022", "branch": "Steno", "gender": "M", "alive": true, "conf": 95}, {"id": "MA000004", "first": "Emma", "sur": "Marcegaglia", "fid": "MA000001", "mid": "MA000002", "dob": "1965-12-24", "dod": null, "sp": [], "family_id": "F022", "branch": "Steno", "gender": "F", "alive": true, "conf": 95}]}, {"id": "F023", "name": "Lavazza", "surname": "Lavazza", "assets": "Lavazza / coffee", "geo": "Torino", "color": "#5a98c8", "members": [{"id": "LA000001", "first": "Luigi", "sur": "Lavazza", "fid": null, "mid": null, "dob": "1859", "dod": "1949", "sp": ["LA000002"], "family_id": "F023", "branch": "Founder", "gender": "M", "alive": false, "conf": 90}, {"id": "LA000002", "first": "Emilia", "sur": "Morino", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["LA000001"], "family_id": "F023", "branch": "Spouse", "gender": "F", "alive": false, "conf": 80}, {"id": "LA000003", "first": "Mario", "sur": "Lavazza", "fid": "LA000001", "mid": "LA000002", "dob": null, "dod": null, "sp": [], "family_id": "F023", "branch": "Luigi", "gender": "M", "alive": false, "conf": 80}, {"id": "LA000004", "first": "Giuseppe", "sur": "Lavazza", "fid": "LA000001", "mid": "LA000002", "dob": null, "dod": null, "sp": [], "family_id": "F023", "branch": "Luigi", "gender": "M", "alive": false, "conf": 75}, {"id": "LA000005", "first": "Emilio", "sur": "Lavazza", "fid": "LA000003", "mid": null, "dob": "1932", "dod": "2010", "sp": [], "family_id": "F023", "branch": "Mario", "gender": "M", "alive": false, "conf": 80}, {"id": "LA000006", "first": "Alberto", "sur": "Lavazza", "fid": "LA000005", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F023", "branch": "Emilio", "gender": "M", "alive": true, "conf": 80}, {"id": "LA000007", "first": "Giuseppe", "sur": "Lavazza", "fid": "LA000005", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F023", "branch": "Emilio", "gender": "M", "alive": true, "conf": 80}, {"id": "LA000008", "first": "Francesca", "sur": "Lavazza", "fid": "LA000005", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F023", "branch": "Emilio", "gender": "F", "alive": true, "conf": 80}, {"id": "LA000009", "first": "Antonella", "sur": "Lavazza", "fid": "LA000005", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F023", "branch": "Emilio", "gender": "F", "alive": true, "conf": 75}, {"id": "LA000010", "first": "Maria", "sur": "Lavazza", "fid": "LA000001", "mid": "LA000002", "dob": null, "dod": null, "sp": [], "family_id": "F023", "branch": "Luigi", "gender": "F", "alive": false, "conf": 90}, {"id": "LA000011", "first": "Pericle", "sur": "Lavazza", "fid": "LA000001", "mid": "LA000002", "dob": null, "dod": null, "sp": [], "family_id": "F023", "branch": "Luigi", "gender": "M", "alive": false, "conf": 90}]}, {"id": "F024", "name": "Illy", "surname": "Illy", "assets": "illycaffe / coffee", "geo": "Trieste", "color": "#c8a878", "members": [{"id": "IL000001", "first": "Francesco", "sur": "Illy", "fid": null, "mid": null, "dob": "1892", "dod": "1956", "sp": [], "family_id": "F024", "branch": "Founder", "gender": "M", "alive": false, "conf": 90}, {"id": "IL000002", "first": "Ernesto", "sur": "Illy", "fid": "IL000001", "mid": null, "dob": "1925-07-18", "dod": "2008-02-03", "sp": ["IL000003"], "family_id": "F024", "branch": "Francesco", "gender": "M", "alive": false, "conf": 90}, {"id": "IL000003", "first": "Anna", "sur": "Rossi", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["IL000002"], "family_id": "F024", "branch": "Spouse", "gender": "F", "alive": false, "conf": 70}, {"id": "IL000004", "first": "Riccardo", "sur": "Illy", "fid": "IL000002", "mid": "IL000003", "dob": "1955-09-24", "dod": null, "sp": [], "family_id": "F024", "branch": "Ernesto", "gender": "M", "alive": true, "conf": 95}, {"id": "IL000005", "first": "Andrea", "sur": "Illy", "fid": "IL000002", "mid": "IL000003", "dob": "1964", "dod": null, "sp": [], "family_id": "F024", "branch": "Ernesto", "gender": "M", "alive": true, "conf": 85}, {"id": "IL000006", "first": "Anna", "sur": "Illy", "fid": "IL000002", "mid": "IL000003", "dob": null, "dod": null, "sp": [], "family_id": "F024", "branch": "Ernesto", "gender": "F", "alive": true, "conf": 75}, {"id": "IL000007", "first": "Francesco", "sur": "Illy", "fid": "IL000002", "mid": "IL000003", "dob": null, "dod": null, "sp": [], "family_id": "F024", "branch": "Ernesto", "gender": "M", "alive": true, "conf": 75}, {"id": "IL000008", "first": "Daria", "sur": "Illy", "fid": "IL000004", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F024", "branch": "Riccardo", "gender": "F", "alive": true, "conf": 90}]}, {"id": "F025", "name": "Pesenti", "surname": "Pesenti", "assets": "Italmobiliare / Italcementi", "geo": "Bergamo / Milano", "color": "#5a8b78", "members": [{"id": "PE000001", "first": "Carlo", "sur": "Pesenti", "fid": null, "mid": null, "dob": "1907", "dod": "1984", "sp": [], "family_id": "F025", "branch": "Founder", "gender": "M", "alive": false, "conf": 80}, {"id": "PE000001", "first": "Carlo", "sur": "Pesenti", "fid": null, "mid": null, "dob": "1907", "dod": "1984", "sp": [], "family_id": "F025", "branch": "Founder", "gender": "M", "alive": false, "conf": 80}, {"id": "PE000002", "first": "Giampiero", "sur": "Pesenti", "fid": "PE000001", "mid": null, "dob": "1931", "dod": "2019", "sp": ["PE000004"], "family_id": "F025", "branch": "Carlo", "gender": "M", "alive": false, "conf": 95}, {"id": "PE000002", "first": "Giampiero", "sur": "Pesenti", "fid": "PE000001", "mid": null, "dob": "1931", "dod": "2019", "sp": ["PE000004"], "family_id": "F025", "branch": "Carlo", "gender": "M", "alive": false, "conf": 95}, {"id": "PE000003", "first": "Carlo", "sur": "Pesenti", "fid": "PE000002", "mid": "PE000004", "dob": "1963", "dod": null, "sp": [], "family_id": "F025", "branch": "Giampiero", "gender": "M", "alive": true, "conf": 95}, {"id": "PE000003", "first": "Carlo", "sur": "Pesenti", "fid": "PE000002", "mid": "PE000004", "dob": "1963", "dod": null, "sp": [], "family_id": "F025", "branch": "Giampiero", "gender": "M", "alive": true, "conf": 95}, {"id": "PE000004", "first": "Franca", "sur": "Natta", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["PE000002"], "family_id": "F025", "branch": "Spouse", "gender": "F", "alive": false, "conf": 90}, {"id": "PE000005", "first": "Giulia", "sur": "Pesenti", "fid": "PE000002", "mid": "PE000004", "dob": null, "dod": null, "sp": [], "family_id": "F025", "branch": "Giampiero", "gender": "F", "alive": true, "conf": 90}, {"id": "PE000006", "first": "Laura", "sur": "Pesenti", "fid": "PE000002", "mid": "PE000004", "dob": null, "dod": null, "sp": [], "family_id": "F025", "branch": "Giampiero", "gender": "F", "alive": true, "conf": 90}]}, {"id": "F026", "name": "Bracco", "surname": "Bracco", "assets": "Bracco Group / pharma diagnostics", "geo": "Milano", "color": "#c85878", "members": [{"id": "BR000001", "first": "Elio", "sur": "Bracco", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F026", "branch": "Founder", "gender": "M", "alive": false, "conf": 98}, {"id": "BR000002", "first": "Fulvio", "sur": "Bracco", "fid": "BR000001", "mid": null, "dob": "1909", "dod": "2007", "sp": [], "family_id": "F026", "branch": "Fulvio", "gender": "M", "alive": false, "conf": 98}, {"id": "BR000003", "first": "Diana", "sur": "Bracco", "fid": "BR000002", "mid": null, "dob": "1941-07-03", "dod": null, "sp": [], "family_id": "F026", "branch": "Elio", "gender": "F", "alive": true, "conf": 98}, {"id": "BR000004", "first": "Fulvio", "sur": "Renoldi", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F026", "branch": "Descendant", "gender": "M", "alive": true, "conf": 70}]}, {"id": "F027", "name": "Armani", "surname": "Armani", "assets": "Giorgio Armani / fashion", "geo": "Piacenza / Milano", "color": "#78c85a", "members": [{"id": "AR000001", "first": "Giorgio", "sur": "Armani", "fid": null, "mid": null, "dob": "1934-07-11", "dod": "2025-09-04", "sp": [], "family_id": "F027", "branch": "Founder", "gender": "M", "alive": false, "conf": 95}, {"id": "AR000002", "first": "Sergio", "sur": "Galeotti", "fid": null, "mid": null, "dob": "1945", "dod": "1985", "sp": [], "family_id": "F027", "branch": "Partner", "gender": "M", "alive": false, "conf": 80}, {"id": "AR000003", "first": "Rosanna", "sur": "Armani", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F027", "branch": "Sibling", "gender": "F", "alive": true, "conf": 75}, {"id": "AR000004", "first": "Sergio", "sur": "Armani", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F027", "branch": "Sibling", "gender": "M", "alive": false, "conf": 70}, {"id": "AR000005", "first": "Silvana", "sur": "Armani", "fid": "AR000004", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F027", "branch": "Sergio", "gender": "F", "alive": true, "conf": 90}, {"id": "AR000006", "first": "Roberta", "sur": "Armani", "fid": "AR000004", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F027", "branch": "Sergio", "gender": "F", "alive": true, "conf": 90}, {"id": "AR000007", "first": "Andrea", "sur": "Camerana", "fid": null, "mid": "AR000003", "dob": null, "dod": null, "sp": [], "family_id": "F027", "branch": "Rosanna", "gender": "M", "alive": true, "conf": 90}]}, {"id": "F028", "name": "Prada-Bertelli", "surname": "Prada / Bertelli", "assets": "Prada Group / fashion", "geo": "Milano", "color": "#8b5ac8", "members": [{"id": "PR000001", "first": "Mario", "sur": "Prada", "fid": null, "mid": null, "dob": "1881", "dod": "1958", "sp": [], "family_id": "F028", "branch": "Founder", "gender": "M", "alive": false, "conf": 85}, {"id": "PR000002", "first": "Luisa", "sur": "Prada", "fid": "PR000001", "mid": null, "dob": "1910", "dod": "1998", "sp": [], "family_id": "F028", "branch": "Mario", "gender": "F", "alive": false, "conf": 85}, {"id": "PR000003", "first": "Miuccia", "sur": "Prada", "fid": null, "mid": "PR000002", "dob": "1949-05-10", "dod": null, "sp": ["PR000004"], "family_id": "F028", "branch": "Luisa", "gender": "F", "alive": true, "conf": 95}, {"id": "PR000004", "first": "Patrizio", "sur": "Bertelli", "fid": null, "mid": null, "dob": "1946-04-06", "dod": null, "sp": ["PR000003"], "family_id": "F028", "branch": "Bertelli", "gender": "M", "alive": true, "conf": 95}, {"id": "PR000005", "first": "Lorenzo", "sur": "Bertelli", "fid": "PR000004", "mid": "PR000003", "dob": "1988", "dod": null, "sp": [], "family_id": "F028", "branch": "Prada-Bertelli", "gender": "M", "alive": true, "conf": 99}, {"id": "PR000006", "first": "Giulio", "sur": "Bertelli", "fid": "PR000004", "mid": "PR000003", "dob": null, "dod": null, "sp": [], "family_id": "F028", "branch": "Prada-Bertelli", "gender": "M", "alive": true, "conf": 95}]}, {"id": "F029", "name": "Missoni", "surname": "Missoni", "assets": "Missoni / fashion", "geo": "Varese", "color": "#c87858", "members": [{"id": "MI000001", "first": "Ottavio", "sur": "Missoni", "fid": null, "mid": null, "dob": "1921-02-11", "dod": "2013-05-09", "sp": ["MI000002"], "family_id": "F029", "branch": "Founder", "gender": "M", "alive": false, "conf": 95}, {"id": "MI000002", "first": "Rosita", "sur": "Jelmini", "fid": null, "mid": null, "dob": "1931", "dod": null, "sp": ["MI000001"], "family_id": "F029", "branch": "Founder", "gender": "F", "alive": true, "conf": 95}, {"id": "MI000003", "first": "Vittorio", "sur": "Missoni", "fid": "MI000001", "mid": "MI000002", "dob": "1954", "dod": "2013", "sp": [], "family_id": "F029", "branch": "Ottavio-Rosita", "gender": "M", "alive": false, "conf": 90}, {"id": "MI000004", "first": "Luca", "sur": "Missoni", "fid": "MI000001", "mid": "MI000002", "dob": "1956", "dod": null, "sp": [], "family_id": "F029", "branch": "Ottavio-Rosita", "gender": "M", "alive": true, "conf": 90}, {"id": "MI000005", "first": "Angela", "sur": "Missoni", "fid": "MI000001", "mid": "MI000002", "dob": "1958", "dod": null, "sp": [], "family_id": "F029", "branch": "Ottavio-Rosita", "gender": "F", "alive": true, "conf": 90}, {"id": "MI000006", "first": "Margherita", "sur": "Maccapani Missoni", "fid": null, "mid": "MI000005", "dob": "1983", "dod": null, "sp": [], "family_id": "F029", "branch": "Angela", "gender": "F", "alive": true, "conf": 80}]}, {"id": "F030", "name": "Bulgari", "surname": "Bulgari", "assets": "Bvlgari / luxury jewellery", "geo": "Roma", "color": "#5a78ab", "members": [{"id": "BU000001", "first": "Sotirio", "sur": "Bulgari", "fid": null, "mid": null, "dob": "1857", "dod": "1932", "sp": [], "family_id": "F030", "branch": "Founder", "gender": "M", "alive": false, "conf": 90}, {"id": "BU000002", "first": "Giorgio", "sur": "Bulgari", "fid": "BU000001", "mid": null, "dob": "1890", "dod": "1966", "sp": [], "family_id": "F030", "branch": "Sotirio", "gender": "M", "alive": false, "conf": 80}, {"id": "BU000003", "first": "Costantino", "sur": "Bulgari", "fid": "BU000001", "mid": null, "dob": "1889", "dod": "1973", "sp": [], "family_id": "F030", "branch": "Sotirio", "gender": "M", "alive": false, "conf": 80}, {"id": "BU000004", "first": "Gianni", "sur": "Bulgari", "fid": "BU000002", "mid": null, "dob": "1935", "dod": null, "sp": [], "family_id": "F030", "branch": "Giorgio", "gender": "M", "alive": true, "conf": 75}, {"id": "BU000005", "first": "Paolo", "sur": "Bulgari", "fid": "BU000002", "mid": null, "dob": "1937", "dod": null, "sp": [], "family_id": "F030", "branch": "Giorgio", "gender": "M", "alive": true, "conf": 75}, {"id": "BU000006", "first": "Nicola", "sur": "Bulgari", "fid": "BU000002", "mid": null, "dob": "1941", "dod": null, "sp": [], "family_id": "F030", "branch": "Giorgio", "gender": "M", "alive": true, "conf": 75}]}, {"id": "F031", "name": "Moretti Polegato", "surname": "Moretti Polegato", "assets": "Geox / footwear", "geo": "Montebelluna", "color": "#ab985a", "members": [{"id": "MP000001", "first": "Mario", "sur": "Moretti Polegato", "fid": null, "mid": null, "dob": "1952", "dod": null, "sp": [], "family_id": "F031", "branch": "Founder", "gender": "M", "alive": true, "conf": 90}, {"id": "MP000002", "first": "Enrico", "sur": "Moretti Polegato", "fid": "MP000001", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F031", "branch": "Mario", "gender": "M", "alive": true, "conf": 75}]}, {"id": "F032", "name": "Ligresti", "surname": "Ligresti", "assets": "Real estate / insurance / Fondiaria-SAI", "geo": "Milano / Sicilia", "color": "#5ab878", "members": [{"id": "LI000001", "first": "Salvatore", "sur": "Ligresti", "fid": null, "mid": null, "dob": "1932-03-13", "dod": "2018-05-15", "sp": ["LI000002"], "family_id": "F032", "branch": "Founder", "gender": "M", "alive": false, "conf": 90}, {"id": "LI000002", "first": "Antonietta", "sur": "Fragapane", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["LI000001"], "family_id": "F032", "branch": "Spouse", "gender": "F", "alive": false, "conf": 70}, {"id": "LI000003", "first": "Giulia", "sur": "Ligresti", "fid": "LI000001", "mid": "LI000002", "dob": null, "dod": null, "sp": [], "family_id": "F032", "branch": "Salvatore", "gender": "F", "alive": true, "conf": 85}, {"id": "LI000004", "first": "Jonella", "sur": "Ligresti", "fid": "LI000001", "mid": "LI000002", "dob": null, "dod": null, "sp": [], "family_id": "F032", "branch": "Salvatore", "gender": "F", "alive": true, "conf": 85}, {"id": "LI000005", "first": "Paolo", "sur": "Ligresti", "fid": "LI000001", "mid": "LI000002", "dob": null, "dod": null, "sp": [], "family_id": "F032", "branch": "Salvatore", "gender": "M", "alive": true, "conf": 85}]}, {"id": "F033", "name": "Boroli-Drago", "surname": "Boroli / Drago", "assets": "De Agostini / publishing / holding", "geo": "Novara", "color": "#c858ab", "members": [{"id": "BD000001", "first": "Giovanni", "sur": "De Agostini", "fid": null, "mid": null, "dob": "1863", "dod": "1941", "sp": [], "family_id": "F033", "branch": "Founder", "gender": "M", "alive": false, "conf": 85}, {"id": "BD000002", "first": "Cesare", "sur": "Angelo Boroli", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F033", "branch": "Boroli", "gender": "M", "alive": false, "conf": 70}, {"id": "BD000003", "first": "Achille", "sur": "Boroli", "fid": "BD000002", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F033", "branch": "Boroli", "gender": "M", "alive": false, "conf": 70}, {"id": "BD000004", "first": "Marco", "sur": "Drago", "fid": null, "mid": null, "dob": "1946", "dod": null, "sp": [], "family_id": "F033", "branch": "Drago", "gender": "M", "alive": true, "conf": 85}, {"id": "BD000005", "first": "Lorenzo", "sur": "Pellicioli", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F033", "branch": "Executive", "gender": "M", "alive": true, "conf": 60}]}, {"id": "F034", "name": "Antinori", "surname": "Antinori", "assets": "Marchesi Antinori / wine", "geo": "Firenze", "color": "#58abc8", "members": [{"id": "AN000001", "first": "Piero", "sur": "Antinori", "fid": null, "mid": null, "dob": "1938", "dod": null, "sp": [], "family_id": "F034", "branch": "Current", "gender": "M", "alive": true, "conf": 95}, {"id": "AN000002", "first": "Albiera", "sur": "Antinori", "fid": "AN000001", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F034", "branch": "Piero", "gender": "F", "alive": true, "conf": 90}, {"id": "AN000003", "first": "Alessia", "sur": "Antinori", "fid": "AN000001", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F034", "branch": "Piero", "gender": "F", "alive": true, "conf": 90}, {"id": "AN000004", "first": "Allegra", "sur": "Antinori", "fid": "AN000001", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F034", "branch": "Piero", "gender": "F", "alive": true, "conf": 90}]}, {"id": "F035", "name": "Frescobaldi", "surname": "Frescobaldi", "assets": "Marchesi Frescobaldi / wine", "geo": "Firenze", "color": "#c8985a", "members": [{"id": "FR000001", "first": "Vittorio", "sur": "Frescobaldi", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F035", "branch": "Current", "gender": "M", "alive": true, "conf": 80}, {"id": "FR000002", "first": "Lamberto", "sur": "Frescobaldi", "fid": "FR000001", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F035", "branch": "Vittorio", "gender": "M", "alive": true, "conf": 80}, {"id": "FR000003", "first": "Dino", "sur": "Frescobaldi", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F035", "branch": "Historical", "gender": "M", "alive": false, "conf": 70}]}, {"id": "F036", "name": "Zegna", "surname": "Zegna", "assets": "Ermenegildo Zegna Group / fashion", "geo": "Trivero / Biella", "color": "#58c8ab", "members": [{"id": "ZE000001", "first": "Ermenegildo", "sur": "Zegna", "fid": null, "mid": null, "dob": "1892", "dod": "1966", "sp": [], "family_id": "F036", "branch": "Founder", "gender": "M", "alive": false, "conf": 95}, {"id": "ZE000002", "first": "Angelo", "sur": "Zegna", "fid": "ZE000001", "mid": null, "dob": "1924", "dod": "2021", "sp": [], "family_id": "F036", "branch": "Ermenegildo", "gender": "M", "alive": false, "conf": 85}, {"id": "ZE000003", "first": "Aldo", "sur": "Zegna", "fid": "ZE000001", "mid": null, "dob": "1920", "dod": "2000", "sp": [], "family_id": "F036", "branch": "Ermenegildo", "gender": "M", "alive": false, "conf": 85}, {"id": "ZE000004", "first": "Ermenegildo", "sur": "Zegna", "fid": "ZE000002", "mid": null, "dob": "1955", "dod": null, "sp": [], "family_id": "F036", "branch": "Angelo", "gender": "M", "alive": true, "conf": 85}, {"id": "ZE000005", "first": "Paolo", "sur": "Zegna", "fid": "ZE000002", "mid": null, "dob": "1956", "dod": null, "sp": [], "family_id": "F036", "branch": "Angelo", "gender": "M", "alive": true, "conf": 85}, {"id": "ZE000006", "first": "Anna", "sur": "Zegna", "fid": "ZE000002", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F036", "branch": "Angelo", "gender": "F", "alive": true, "conf": 75}, {"id": "ZE000007", "first": "Edoardo", "sur": "Zegna", "fid": "ZE000004", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F036", "branch": "Gildo", "gender": "M", "alive": true, "conf": 98}, {"id": "ZE000008", "first": "Angelo", "sur": "Zegna", "fid": "ZE000004", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F036", "branch": "Gildo", "gender": "M", "alive": true, "conf": 98}]}, {"id": "F037", "name": "Ferragamo", "surname": "Ferragamo", "assets": "Salvatore Ferragamo / fashion", "geo": "Firenze", "color": "#ab585a", "members": [{"id": "FE000001", "first": "Salvatore", "sur": "Ferragamo", "fid": null, "mid": null, "dob": "1898-06-05", "dod": "1960-08-07", "sp": ["FE000002"], "family_id": "F037", "branch": "Founder", "gender": "M", "alive": false, "conf": 95}, {"id": "FE000002", "first": "Wanda", "sur": "Miletti", "fid": null, "mid": null, "dob": "1921", "dod": "2018", "sp": ["FE000001"], "family_id": "F037", "branch": "Spouse", "gender": "F", "alive": false, "conf": 90}, {"id": "FE000003", "first": "Fiamma", "sur": "Ferragamo", "fid": "FE000001", "mid": "FE000002", "dob": "1941", "dod": "1998", "sp": [], "family_id": "F037", "branch": "Salvatore-Wanda", "gender": "F", "alive": false, "conf": 90}, {"id": "FE000004", "first": "Ferruccio", "sur": "Ferragamo", "fid": "FE000001", "mid": "FE000002", "dob": "1945", "dod": null, "sp": ["FE000009"], "family_id": "F037", "branch": "Salvatore-Wanda", "gender": "M", "alive": true, "conf": 90}, {"id": "FE000005", "first": "Giovanna", "sur": "Ferragamo", "fid": "FE000001", "mid": "FE000002", "dob": "1943", "dod": null, "sp": [], "family_id": "F037", "branch": "Salvatore-Wanda", "gender": "F", "alive": true, "conf": 85}, {"id": "FE000006", "first": "Leonardo", "sur": "Ferragamo", "fid": "FE000001", "mid": "FE000002", "dob": "1953", "dod": null, "sp": [], "family_id": "F037", "branch": "Salvatore-Wanda", "gender": "M", "alive": true, "conf": 90}, {"id": "FE000007", "first": "Massimo", "sur": "Ferragamo", "fid": "FE000001", "mid": "FE000002", "dob": null, "dod": null, "sp": [], "family_id": "F037", "branch": "Salvatore-Wanda", "gender": "M", "alive": true, "conf": 85}, {"id": "FE000008", "first": "Fulvia", "sur": "Ferragamo", "fid": "FE000001", "mid": "FE000002", "dob": "1950", "dod": "2018", "sp": [], "family_id": "F037", "branch": "Salvatore-Wanda", "gender": "F", "alive": false, "conf": 85}, {"id": "FE000009", "first": "Amanda", "sur": "Peat", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F037", "branch": "Spouse", "gender": "F", "alive": true, "conf": 90}, {"id": "FE000010", "first": "James", "sur": "Ferragamo", "fid": "FE000004", "mid": "FE000009", "dob": "1971-11-07", "dod": null, "sp": [], "family_id": "F037", "branch": "Ferruccio", "gender": "M", "alive": true, "conf": 98}]}, {"id": "F038", "name": "Cucinelli", "surname": "Cucinelli", "assets": "Brunello Cucinelli / luxury cashmere", "geo": "Solomeo / Perugia", "color": "#78abc8", "members": [{"id": "CU000001", "first": "Brunello", "sur": "Cucinelli", "fid": null, "mid": null, "dob": "1953-09-03", "dod": null, "sp": ["CU000002"], "family_id": "F038", "branch": "Founder", "gender": "M", "alive": true, "conf": 95}, {"id": "CU000002", "first": "Federica", "sur": "Benda", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["CU000001"], "family_id": "F038", "branch": "Spouse", "gender": "F", "alive": true, "conf": 80}, {"id": "CU000003", "first": "Camilla", "sur": "Cucinelli", "fid": "CU000001", "mid": "CU000002", "dob": null, "dod": null, "sp": [], "family_id": "F038", "branch": "Brunello", "gender": "F", "alive": true, "conf": 90}, {"id": "CU000004", "first": "Carolina", "sur": "Cucinelli", "fid": "CU000001", "mid": "CU000002", "dob": null, "dod": null, "sp": [], "family_id": "F038", "branch": "Brunello", "gender": "F", "alive": true, "conf": 90}, {"id": "CU000005", "first": "Alessio", "sur": "Piastrelli", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["CU000003"], "family_id": "F038", "branch": "Spouse", "gender": "M", "alive": true, "conf": 70}, {"id": "CU000006", "first": "Riccardo", "sur": "Stefanelli", "fid": null, "mid": null, "dob": null, "dod": null, "sp": ["CU000004"], "family_id": "F038", "branch": "Spouse", "gender": "M", "alive": true, "conf": 70}, {"id": "CU000007", "first": "Vittoria", "sur": "Cucinelli", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F038", "branch": "Grandchildren", "gender": "F", "alive": true, "conf": 75}, {"id": "CU000008", "first": "Penelope", "sur": "Cucinelli", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F038", "branch": "Grandchildren", "gender": "F", "alive": true, "conf": 75}, {"id": "CU000009", "first": "Brando", "sur": "Cucinelli", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F038", "branch": "Grandchildren", "gender": "M", "alive": true, "conf": 75}]}, {"id": "F039", "name": "Rosso", "surname": "Rosso", "assets": "OTB / Diesel / fashion", "geo": "Veneto", "color": "#c8ab78", "members": [{"id": "RO000001", "first": "Renzo", "sur": "Rosso", "fid": null, "mid": null, "dob": "1955-09-15", "dod": null, "sp": [], "family_id": "F039", "branch": "Founder", "gender": "M", "alive": true, "conf": 95}, {"id": "RO000002", "first": "Andrea", "sur": "Rosso", "fid": "RO000001", "mid": "RO000009", "dob": null, "dod": null, "sp": [], "family_id": "F039", "branch": "Renzo", "gender": "M", "alive": true, "conf": 85}, {"id": "RO000003", "first": "Stefano", "sur": "Rosso", "fid": "RO000001", "mid": "RO000009", "dob": null, "dod": null, "sp": [], "family_id": "F039", "branch": "Renzo", "gender": "M", "alive": true, "conf": 85}, {"id": "RO000004", "first": "Asia", "sur": "Rosso", "fid": "RO000001", "mid": "RO000010", "dob": null, "dod": null, "sp": [], "family_id": "F039", "branch": "Renzo", "gender": "F", "alive": true, "conf": 75}, {"id": "RO000005", "first": "Luna", "sur": "Rosso", "fid": "RO000001", "mid": "RO000010", "dob": null, "dod": null, "sp": [], "family_id": "F039", "branch": "Renzo", "gender": "F", "alive": true, "conf": 75}, {"id": "RO000006", "first": "India", "sur": "Rosso", "fid": "RO000001", "mid": "RO000010", "dob": null, "dod": null, "sp": [], "family_id": "F039", "branch": "Renzo", "gender": "F", "alive": true, "conf": 75}, {"id": "RO000007", "first": "Alessia", "sur": "Rosso", "fid": "RO000001", "mid": "RO000009", "dob": null, "dod": null, "sp": [], "family_id": "F039", "branch": "Renzo", "gender": "F", "alive": true, "conf": 90}, {"id": "RO000008", "first": "Sydne", "sur": "Rosso", "fid": "RO000001", "mid": "RO000011", "dob": null, "dod": null, "sp": [], "family_id": "F039", "branch": "Renzo", "gender": "F", "alive": true, "conf": 88}, {"id": "RO000009", "first": "Nuccia", "sur": "Fattoretto", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F039", "branch": "Spouse/partner", "gender": "F", "alive": true, "conf": 85}, {"id": "RO000010", "first": "Erika", "sur": "Merlo", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F039", "branch": "Spouse/partner", "gender": "F", "alive": true, "conf": 85}, {"id": "RO000011", "first": "Arianna", "sur": "Alessi", "fid": null, "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F039", "branch": "Spouse/partner", "gender": "F", "alive": true, "conf": 90}]}, {"id": "F040", "name": "Ruffini", "surname": "Ruffini", "assets": "Moncler / luxury outerwear", "geo": "Como / Milano", "color": "#ab5ac8", "members": [{"id": "RU000001", "first": "Remo", "sur": "Ruffini", "fid": null, "mid": null, "dob": "1961-08-27", "dod": null, "sp": [], "family_id": "F040", "branch": "Founder", "gender": "M", "alive": true, "conf": 95}, {"id": "RU000002", "first": "Pietro", "sur": "Ruffini", "fid": "RU000001", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F040", "branch": "Remo", "gender": "M", "alive": true, "conf": 70}, {"id": "RU000003", "first": "Romeo", "sur": "Ruffini", "fid": "RU000001", "mid": null, "dob": null, "dod": null, "sp": [], "family_id": "F040", "branch": "Remo", "gender": "M", "alive": true, "conf": 70}]}];
+
+const BYID = {};
+FAMILIES.forEach(f => f.members.forEach(m => BYID[m.id] = {...m, familyColor:f.color, familyName:f.name}));
+
+let FAM = null, selId = null, searchQ = '';
+const BPAL = ['#c8a45a','#a05a5a','#5a7ec8','#5aab78','#9a6ac8','#c87a5a','#6ab0b0','#ab9a5a','#c85a9a','#5ac8ab'];
+
+function rgba(hex,a){
+  if(!hex||hex.length<7) return `rgba(128,128,128,${a})`;
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/* ── INIT ── */
+function init() {
+  const total = FAMILIES.reduce((s,f)=>s+f.members.length,0);
+  document.getElementById('stat-chip').textContent = `${FAMILIES.length} families · ${total} people`;
+  document.getElementById('sb-sub').textContent = `${FAMILIES.length} families · ${total} people`;
+
+  document.getElementById('fam-list').innerHTML = FAMILIES.map(f =>
+    `<div class="fam-row" id="sr-${f.id}" onclick="selectFam('${f.id}')">
+      <div class="fam-crest" style="background:${rgba(f.color,.15)};color:${f.color};">${f.name[0]}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="fam-nm">${f.name}</div>
+        <div class="fam-geo">${f.geo}</div>
+      </div>
+      <div class="fam-cnt">${f.members.length}</div>
+    </div>`
+  ).join('');
+}
+
+/* ── SELECT FAMILY ── */
+function selectFam(id) {
+  FAM = FAMILIES.find(f=>f.id===id);
+  if (!FAM) return;
+  selId = null;
+  document.querySelectorAll('.fam-row').forEach(r=>r.classList.remove('active'));
+  const sr = document.getElementById('sr-'+id);
+  if (sr) { sr.classList.add('active'); sr.scrollIntoView({block:'nearest'}); }
+  document.getElementById('dp').classList.remove('open');
+  renderFamily();
+}
+
+/* ── GENERATION ASSIGNMENT ── */
+function assignGens(fam) {
+  const fm = {};
+  fam.members.forEach(m => fm[m.id] = m);
+  const gen = {};
+  const children = {};
+  fam.members.forEach(m => {
+    [m.fid,m.mid].forEach(pid => {
+      if (pid && fm[pid]) { if (!children[pid]) children[pid]=[]; children[pid].push(m.id); }
+    });
+  });
+  // BFS from roots that have children (true ancestors)
+  const q = [];
+  fam.members.forEach(m => {
+    const hasParent = (m.fid&&fm[m.fid])||(m.mid&&fm[m.mid]);
+    if (!hasParent && (children[m.id]||[]).length>0) { gen[m.id]=1; q.push(m.id); }
+  });
+  while (q.length) {
+    const id=q.shift();
+    (children[id]||[]).forEach(cid=>{
+      if (gen[cid]===undefined) { gen[cid]=gen[id]+1; q.push(cid); }
+    });
+  }
+  // Spouses inherit their partner's generation
+  let changed=true;
+  while (changed) {
+    changed=false;
+    fam.members.forEach(m => {
+      if (gen[m.id]!==undefined) return;
+      const partners=[...(m.sp||[])];
+      fam.members.forEach(o=>{ if((o.sp||[]).includes(m.id)) partners.push(o.id); });
+      partners.forEach(sid=>{
+        if (gen[sid]!==undefined && gen[m.id]===undefined) { gen[m.id]=gen[sid]; changed=true; }
+      });
+    });
+  }
+  fam.members.forEach(m=>{ if(gen[m.id]===undefined) gen[m.id]=1; });
+  return gen;
+}
+
+/* ── RENDER FAMILY ── */
+function renderFamily() {
+  const f = FAM;
+  const fm = {};
+  f.members.forEach(m=>fm[m.id]=m);
+  const genOf = assignGens(f);
+  const maxGen = Math.max(...Object.values(genOf));
+  const living = f.members.filter(m=>m.alive).length;
+
+  // Assign branch colours to gen2 primaries
+  const branchCol = {};
+  const gen2 = f.members.filter(m=>genOf[m.id]===2&&((m.fid&&fm[m.fid])||(m.mid&&fm[m.mid])));
+  gen2.forEach((m,i)=>branchCol[m.id]=BPAL[i%BPAL.length]);
+  function getBCol(m) {
+    if (branchCol[m.id]) return branchCol[m.id];
+    const pid=m.fid||m.mid;
+    if (pid&&fm[pid]) return getBCol(fm[pid]);
+    return f.color;
+  }
+
+  // Distinct branches from data
+  const branches=[...new Set(f.members.map(m=>m.branch).filter(Boolean))];
+  const branchCounts={};
+  branches.forEach(b=>branchCounts[b]=f.members.filter(m=>m.branch===b).length);
+  const maxB=Math.max(...Object.values(branchCounts),1);
+
+  // Group by gen
+  const byGen={};
+  for(let g=1;g<=maxGen;g++) byGen[g]=[];
+  f.members.forEach(m=>byGen[genOf[m.id]].push(m));
+
+  // Build generation sections HTML
+  // Within each gen, group couples together
+  const genRomans=['','I','II','III','IV','V','VI'];
+  const genNames=['','Founders','Second generation','Third generation','Fourth generation','Fifth generation'];
+
+  function mkCard(m, isSpouse) {
+    const col = getBCol(m);
+    const ini = ((m.first||'?')[0]+((m.sur||'').trim().split(' ').pop()[0]||'')).toUpperCase();
+    const yr = m.dob ? m.dob.slice(0,4) : '';
+    const branchColor = m.branch ? getBCol(m) : col;
+    const spouseLabel = isSpouse ? `<span class="pcard-rel">Married in</span>` : '';
+    return `<div class="pcard${isSpouse?' sp-card':''}" data-id="${m.id}" id="pc-${m.id}" onclick="onCard('${m.id}')">
+      ${!m.alive?'<span class="dag">†</span>':''}
+      <div class="pcard-av" style="background:${rgba(col,.16)};color:${col};">${ini}</div>
+      <div class="pcard-first">${m.first||'?'}</div>
+      <div class="pcard-sur">${(m.sur||'').split(' ').pop()}</div>
+      ${yr?`<div class="pcard-year">${yr}</div>`:''}
+      ${m.branch?`<div style="text-align:center;"><span class="pcard-branch" style="background:${rgba(branchColor,.14)};color:${branchColor};">${m.branch}</span></div>`:''}
+      ${spouseLabel}
+    </div>`;
+  }
+
+  function renderGen(g) {
+    const members = byGen[g];
+    if (!members||!members.length) return '';
+
+    // For each member, figure out if they're a primary or a spouse
+    // Render couples together: primary + their married-in spouses side by side
+    const rendered = new Set();
+    let cardsHtml = '';
+
+    // Sort: primaries first (those with parents in fm), then others
+    const primaries = members.filter(m=>(m.fid&&fm[m.fid])||(m.mid&&fm[m.mid])||(g===1&&(children_of(m).length>0)));
+    const rest = members.filter(m=>!primaries.includes(m));
+
+    function children_of(m){ return f.members.filter(x=>x.fid===m.id||x.mid===m.id); }
+
+    // Spouses-in-same-gen of a primary
+    function getSpouses(m) {
+      return (m.sp||[])
+        .map(sid=>fm[sid])
+        .filter(s=>s&&genOf[s.id]===g&&!rendered.has(s.id)&&!((s.fid&&fm[s.fid])||(s.mid&&fm[s.mid])));
+    }
+
+    [...primaries,...rest].forEach(m=>{
+      if (rendered.has(m.id)) return;
+      rendered.add(m.id);
+      const spList = getSpouses(m);
+      spList.forEach(s=>rendered.add(s.id));
+
+      if (spList.length) {
+        cardsHtml += `<div class="couple-wrap">
+          ${mkCard(m,false)}
+          ${spList.map(sp=>`<div class="m-line"></div><div class="m-ring"></div><div class="m-line"></div>${mkCard(sp,true)}`).join('')}
+        </div>`;
+      } else {
+        cardsHtml += mkCard(m, false);
+      }
+    });
+
+    const title = genNames[g] || `Generation ${g}`;
+    return `<div class="gen-section">
+      <div class="gen-heading">
+        <div class="gen-num">${genRomans[g]||g}</div>
+        <div class="gen-title">${title}</div>
+        <div class="gen-rule"></div>
+        <div class="gen-count">${members.length} people</div>
+      </div>
+      <div class="cards-grid">${cardsHtml}</div>
+    </div>`;
+  }
+
+  let genSections = '';
+  for (let g=1;g<=maxGen;g++) genSections += renderGen(g);
+
+  // Branch bars
+  const branchBars = branches.map((b,i)=>`
+    <div class="br">
+      <div class="br-nm">${b}</div>
+      <div class="br-tr"><div class="br-fl" style="width:${(branchCounts[b]/maxB*100).toFixed(0)}%;background:${BPAL[i%BPAL.length]};"></div></div>
+      <div class="br-ct">${branchCounts[b]}</div>
+    </div>`).join('');
+
+  document.getElementById('main').innerHTML = `
+    <div class="hero" style="background:${f.color};">
+      <div class="hero-inner">
+        <div class="hero-name">${f.name} <em>family</em></div>
+        <div class="hero-sub">${f.geo}${f.surname?' · '+f.surname:''}</div>
+        <div class="hero-kpis">
+          <div><div class="kpi-val">${f.members.length}</div><div class="kpi-lbl">Members</div></div>
+          <div><div class="kpi-val">${living}</div><div class="kpi-lbl">Living</div></div>
+          <div><div class="kpi-val">${maxGen}</div><div class="kpi-lbl">Generations</div></div>
+          <div><div class="kpi-val">${branches.length}</div><div class="kpi-lbl">Branches</div></div>
+        </div>
+        ${f.assets?`<div class="hero-assets">🏛 ${f.assets}</div>`:''}
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="metrics">
+        <div class="metric"><div class="mv">${f.members.length}</div><div class="ml">Total</div><div class="ms">family members</div></div>
+        <div class="metric"><div class="mv">${living}</div><div class="ml">Living</div><div class="ms">${f.members.length-living} deceased</div></div>
+        <div class="metric"><div class="mv">${maxGen}</div><div class="ml">Generations</div><div class="ms">recorded</div></div>
+        <div class="metric"><div class="mv">${f.members.filter(m=>m.sp&&m.sp.length>0).length}</div><div class="ml">Couples</div><div class="ms">recorded</div></div>
+      </div>
+
+      ${genSections}
+
+      ${branches.length?`<div class="branch-section"><h3>Members by branch</h3>${branchBars}</div>`:''}
+    </div>
+  `;
+
+  applyHL();
+}
+
+/* ── CARD CLICK ── */
+function onCard(id) {
+  if (selId===id) { selId=null; closeDP(); return; }
+  selId=id; applyHL(); openDP(id);
+}
+
+function applyHL() {
+  document.querySelectorAll('.pcard').forEach(el=>{
+    el.classList.remove('sel','dim','hl');
+    if (!selId&&!searchQ) return;
+    const id=el.dataset.id;
+    if (searchQ) {
+      const m=BYID[id]||{};
+      const txt=((m.first||'')+' '+(m.sur||'')+' '+(m.familyName||'')).toLowerCase();
+      el.classList.toggle('hl',txt.includes(searchQ));
+      el.classList.toggle('dim',!txt.includes(searchQ));
+    } else {
+      const conn=getConn(selId);
+      if(id===selId) el.classList.add('sel');
+      else if(conn.has(id)) el.classList.add('hl');
+      else el.classList.add('dim');
+    }
+  });
+}
+
+function getConn(id) {
+  const s=new Set();
+  const m=BYID[id]; if(!m) return s;
+  if(m.fid)s.add(m.fid); if(m.mid)s.add(m.mid);
+  (m.sp||[]).forEach(sid=>s.add(sid));
+  if(FAM) FAM.members.forEach(x=>{if(x.fid===id||x.mid===id)s.add(x.id);});
+  return s;
+}
+
+/* ── DETAIL PANEL ── */
+function openDP(id) {
+  const m=BYID[id]; if(!m) return;
+  const col=m.familyColor||'#888';
+  const ini=((m.first||'?')[0]+((m.sur||'').trim().split(' ').pop()[0]||'')).toUpperCase();
+  const fmt=d=>{if(!d)return'—';try{return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}catch{return d;}};
+  const ageOf=x=>{if(!x.dob)return null;const e=x.dod?new Date(x.dod):new Date();try{return Math.floor((e-new Date(x.dob))/(365.25*24*3600*1e3));}catch{return null;}};
+  const father=m.fid?BYID[m.fid]:null;
+  const mother=m.mid?BYID[m.mid]:null;
+  const a=ageOf(m);
+  document.getElementById('dp-hd').innerHTML=`
+    <div class="dp-av" style="background:${rgba(col,.18)};color:${col};">${ini}</div>
+    <div><div class="dp-nm">${m.first} ${m.sur}</div><div class="dp-sb">${m.familyName} · ${m.alive?'Living':'Deceased'}</div></div>
+    <button class="dp-x" onclick="closeDP()">✕</button>`;
+  document.getElementById('dp-bd').innerHTML=`
+    <div class="dp-r"><span class="dp-lb">Born</span><span class="dp-vl">${fmt(m.dob)}</span></div>
+    ${m.dod?`<div class="dp-r"><span class="dp-lb">Died</span><span class="dp-vl">${fmt(m.dod)}</span></div>`
+           :`<div class="dp-r"><span class="dp-lb">Age</span><span class="dp-vl">${a?a+' yrs':'—'}</span></div>`}
+    <div class="dp-r"><span class="dp-lb">Father</span><span class="dp-vl">${father?father.first+' '+father.sur:'—'}</span></div>
+    <div class="dp-r"><span class="dp-lb">Mother</span><span class="dp-vl">${mother?mother.first+' '+mother.sur:'—'}</span></div>
+    ${m.branch?`<div class="dp-r"><span class="dp-lb">Branch</span><span class="dp-vl">${m.branch}</span></div>`:''}
+    ${m.conf?`<div class="dp-r"><span class="dp-lb">Confidence</span><span class="dp-vl">${m.conf}%</span></div>`:''}`;
+  const spouses=(m.sp||[]).map(sid=>BYID[sid]).filter(Boolean);
+  const children=FAM?FAM.members.filter(x=>x.fid===id||x.mid===id):[];
+  const items=[
+    ...spouses.map(s=>`<div class="dp-lk-i" onclick="onCard('${s.id}')"><div class="dp-lk-d" style="background:${s.familyColor||col};"></div>${s.first} ${s.sur}<span class="dp-lk-b">Spouse</span></div>`),
+    ...children.map(c=>`<div class="dp-lk-i" onclick="onCard('${c.id}')"><div class="dp-lk-d" style="background:${col};"></div>${c.first} ${c.sur}<span class="dp-lk-b">Child</span></div>`),
+  ];
+  document.getElementById('dp-lk').innerHTML=items.length?`<div class="dp-lk-t">Connections</div>${items.join('')}`:'';
+  document.getElementById('dp').classList.add('open');
+}
+function closeDP(){selId=null;document.getElementById('dp').classList.remove('open');applyHL();}
+
+/* ── SEARCH ── */
+function onSearch(v) {
+  searchQ=v.trim().toLowerCase(); selId=null; closeDP();
+  if (searchQ) {
+    const match=FAMILIES.find(f=>f.name.toLowerCase().includes(searchQ));
+    if (match&&(!FAM||FAM.id!==match.id)) selectFam(match.id);
+    else applyHL();
+  } else applyHL();
+}
+
+/* ── CLICK OUTSIDE ── */
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.pcard')&&!e.target.closest('.dp')&&!e.target.closest('.couple-wrap')) closeDP();
+});
+
+init();
+selectFam('F001');
+</script>
+</body>
+</html>
